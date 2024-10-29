@@ -9,4 +9,9 @@ const app = createApp(App)
 app.use(ElementPlus)
 app.use(createPinia())
 
+// 路由
+import router from './router'
+app.use(router)
+
+
 app.mount('#app')
