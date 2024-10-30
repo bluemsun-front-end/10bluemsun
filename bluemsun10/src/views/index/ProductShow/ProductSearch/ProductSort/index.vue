@@ -1,14 +1,14 @@
- <template>
+<template>
     <div class="flex flex-wrap items-center">
-      <el-dropdown >
+      <el-dropdown>
         <el-button type="primary" size="large">
-          货币分类<el-icon class="el-icon--right"><arrow-down /></el-icon>
+          商品排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>全部</el-dropdown-item>
-            <el-dropdown-item>服装币</el-dropdown-item>
-            <el-dropdown-item>日用币</el-dropdown-item>
+            <el-dropdown-item>综合排序</el-dropdown-item>
+            <el-dropdown-item>价格升序排列</el-dropdown-item>
+            <el-dropdown-item>价格降序排序</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -29,4 +29,3 @@
     align-items: center;
   }
   </style>
-  
