@@ -63,6 +63,69 @@
                 </template>
             </ProductInfo>
         </div>
+        <div class="content">
+            <ProductInfo name="净月商品">
+                <img :src="imgUrl" alt="">
+                <template #footer>
+                    <div class="details">
+                        <div class="price">日用币：30</div>
+                        <div class="num">库 存：100</div>
+                    </div>
+                    <div class="btn">
+                        <RouterLink :to="{path:'/details'}" active-class="active">
+                            <el-button type="primary" plain>查看详情</el-button>
+                        </RouterLink>
+                    </div>
+                    <RouterView></RouterView>
+                </template>
+            </ProductInfo>
+            <ProductInfo name="净月商品">
+                <img :src="imgUrl" alt="">
+                <template #footer>
+                    <div class="details">
+                        <div class="price">日用币：30</div>
+                        <div class="num">库 存：100</div>
+                    </div>
+                    <div class="btn">
+                        <RouterLink :to="{path:'/details'}" active-class="active">
+                            <el-button type="primary" plain>查看详情</el-button>
+                        </RouterLink>
+                    </div>
+                    <RouterView></RouterView>
+                </template>
+            </ProductInfo>
+            <ProductInfo name="净月商品">
+                <img :src="imgUrl" alt="">
+                <template #footer>
+                    <div class="details">
+                        <div class="price">日用币：30</div>
+                        <div class="num">库 存：100</div>
+                    </div>
+                    <div class="btn">
+                        <RouterLink :to="{path:'/details'}" active-class="active">
+                            <el-button type="primary" plain>查看详情</el-button>
+                        </RouterLink>
+                    </div>
+                    <RouterView></RouterView>
+                </template>
+            </ProductInfo>
+            <ProductInfo name="净月商品">
+                <img :src="imgUrl" alt="">
+                <template #footer>
+                    <div class="details">
+                        <div class="price">日用币：{{price}}</div>
+                        <div class="num">库 存：{{num}}</div>
+                    </div>
+                    <div class="btn">
+                        <RouterLink :to="{path:'/details'}" active-class="active">
+                            <el-button type="primary" plain>查看详情</el-button>
+                        </RouterLink>
+                    </div>
+                    <RouterView></RouterView>
+                    
+                </template>
+            </ProductInfo>
+        </div>
     </div>
 </template>
 
@@ -87,7 +150,8 @@
     display: flex;
     justify-content: space-evenly;
     /* 均分 */
-    flex-wrap: wrap
+    flex-wrap: wrap;
+    margin:0px 75px 30px;
 }
 img{
    width: 95%;

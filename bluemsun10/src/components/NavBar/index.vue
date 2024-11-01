@@ -4,7 +4,6 @@
       <div class="top_hello">
         <span style="margin-left: 40px;">爱心超市</span>
         <span class="campus">净月校区</span>
-        XXX同学你好!
       </div>
       <div class="header_menu">
         <span class="cloud"></span>
