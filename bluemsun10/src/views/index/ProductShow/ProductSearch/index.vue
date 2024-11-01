@@ -6,7 +6,7 @@
     </div>
 </template>
 
-<script setup lang="ts" name="SortDetails">
+<script setup name="SortDetails">
     import CurrencySort from './CurrencySort/index.vue'
     import ProductSort from './ProductSort/index.vue'
     import ProductClass from './ProductClass/index.vue'
@@ -21,7 +21,7 @@
     color: #171616;
     border-radius: 10px;
     padding: 0 10px; /* 可以添加一些内边距 */
-    margin-left: 167px;
+    margin-left: 125px;
 }
 
 .nav-bar > * {

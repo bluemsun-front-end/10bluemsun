@@ -18,6 +18,8 @@ declare module 'vue' {
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElStep: typeof import('element-plus/es')['ElStep']
+    ElSteps: typeof import('element-plus/es')['ElSteps']
     NavBar: typeof import('./src/components/NavBar/index.vue')['default']
     PageNation: typeof import('./src/components/PageNation/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
