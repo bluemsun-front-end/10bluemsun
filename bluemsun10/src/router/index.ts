@@ -14,7 +14,15 @@ const router=createRouter({
         {
             path:'/cart',
             component:ShopCart
-        }
+        },
+
+        
+        {
+            name: 'OrderList',
+            path: '/orderList',
+            component: () => import('@/views/OrderList/OrderListIndex.vue')
+        } 
+        //可老师专属路由,都不能动,可老师说谁动了谁的问题
    ]
 })
    

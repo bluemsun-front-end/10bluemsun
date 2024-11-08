@@ -9,7 +9,7 @@
 </template>
 <style scoped>
     .step{
-        margin-left:1vw;
+        margin-left:4vw;
         margin-right:1vw;
         height: 300px; 
         max-width: 600px;
