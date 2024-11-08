@@ -1,14 +1,14 @@
 <template>
     <div class="flex flex-wrap items-center">
-      <el-dropdown>
+      <el-dropdown @command="handleSort">
         <el-button type="primary" size="large">
           商品排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>综合排序</el-dropdown-item>
-            <el-dropdown-item>价格升序排列</el-dropdown-item>
-            <el-dropdown-item>价格降序排序</el-dropdown-item>
+            <el-dropdown-item command="">综合排序</el-dropdown-item>
+            <el-dropdown-item command="asc">价格升序排列</el-dropdown-item>
+            <el-dropdown-item command="desc">价格降序排序</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -17,6 +17,13 @@
   
   <script lang="ts" setup>
   import { ArrowDown } from '@element-plus/icons-vue'
+// 这里加了
+  import { inject, Ref } from 'vue'; // 导入 Ref 类型
+  const isasc = inject<Ref<string>>('isasc');
+  const handleSort = (command) => {
+  isasc.value = command;
+};
+// 到这里
   </script>
   <style scoped>
   .example-showcase .el-dropdown + .el-dropdown {

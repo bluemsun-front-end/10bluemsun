@@ -11,24 +11,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      searchTerm: '',
-    };
-  },
-  methods: {
-    onSearch() {
-      if (this.searchTerm.trim()) {
-        // 处理搜索逻辑
-        console.log('Searching for:', this.searchTerm);
-        // 在这里添加搜索功能
-      }
-    },
-  },
+<script setup>
+import { inject} from 'vue';
+import { ref } from 'vue';
+const search = inject('searchTerm');
+const searchTerm = ref('');
+const onSearch = () => {
+  search.value=searchTerm.value
 };
 </script>
+
 <style scoped>
 .search-container {
   display: flex;

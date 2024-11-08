@@ -22,6 +22,7 @@
 }
 .goods-disaplay:hover{
     box-shadow:0 0 10px rgb(51.2, 126.4, 204);
+    transition: all 0.2s;
 }
 h2{
     text-align: center;

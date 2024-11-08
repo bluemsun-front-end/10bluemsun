@@ -1,11 +1,16 @@
+<!-- src/App.vue -->
 <template>
-  <router-view></router-view>
+  <div id="app">
+    <router-view></router-view> <!-- 路由视图 -->
+  </div>
 </template>
 
-<script setup>
-
+<script>
+export default {
+  name: 'App'
+};
 </script>
 
-<style scoped>
-
+<style>
+/* 全局样式 */
 </style>
