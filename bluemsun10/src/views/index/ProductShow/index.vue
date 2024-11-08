@@ -8,8 +8,7 @@
           </template>
           <template #footer>
             <div class="details">
-              <!-- 价格 -->
-              <div class="price">{{ products.currencyType }}  :{{ product.price }}</div>
+              <div class="price">{{ product.currencyType}}:{{ product.price }}</div>
               <div class="num">库 存：{{ product.limitNum }}</div>
             </div>
             <div class="btn">
@@ -22,17 +21,12 @@
       </div>
     </div>
   </div>
-  <el-pagination layout="prev, pager, next" :total="50" v-model:currentPage="currentPage"
-    pager-count="50"
-    @current-change="handlePageChange"
-    id="pagenation"/>
 </template>
 
 <script setup name="index">
-import { ref, onMounted, watch } from 'vue';
+import { ref,  watch } from 'vue';
 import ProductInfo from '@/plugins/ProductInfo/index.vue';
 import { RouterLink } from 'vue-router';
-import axios from 'axios';
 const productlist = ref([]);
 
 const props = defineProps({
@@ -46,48 +40,6 @@ watch(() => props.products, (newProducts) => {
   productlist.value = newProducts;
 }, { immediate: true });
 
-//分页
-// 获取登录token
-const authToken = localStorage.getItem('token');
-const clientId = localStorage.getItem('client_id');
-axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
-axios.defaults.headers.common['clientId'] = `${clientId}`;
-   
-const products = ref([]);
-const currentPage = ref(1); // 当前页码
-   
-// 获取商品列表
-const fetchProducts = async (pageNum) => {
-  try {
-    const response = await axios.get('http://106.54.24.243:8080/market/goods/list', {
-      params: {
-        pageSize: 1,
-        pageNum: pageNum,
-      },
-    });
-    products.value = response.data.rows;
-    if(products.value.currencyType==0)
-      {
-        products.value.currencyType="日用币";
-      }
-      else{
-        products.value.currencyType="服装币";
-      }
-    //totalProducts.value = response.data.total; // 假设API返回了总商品数
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-  }
-};
-   
-// 监听页码改变
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-  fetchProducts(newPage);
-};
-   
-onMounted(async () => {
-  await fetchProducts(currentPage.value);
-});
 </script>
 
 <style scoped>
@@ -139,9 +91,8 @@ img:hover {
   display: flex;
   justify-content: center;
 }
-#pagenation{
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+
+a{
+  text-decoration: none;
 }
 </style>

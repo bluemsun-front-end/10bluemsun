@@ -35,9 +35,6 @@ export function useNavBarData(token: string) {
       } else {
         console.error('Failed to fetch balance:', balanceResponse.data.msg);
       }
-
-      // 如果需要，也可以在这里获取 circleUrl
-      // circleUrl.value = ...;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
