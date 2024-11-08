@@ -3,6 +3,7 @@ import {createRouter,createWebHistory} from 'vue-router'
 import GoodsDetails from '@/views/index/GoodsDetails.vue'
 import Home from '@/views/index/index.vue'; // 首页组件
 import Login from '@/views/index/login.vue';
+import ShopCart from '@/views/ShopCart/index.vue';
 
 //创建路由器
 const router=createRouter({
@@ -12,7 +13,13 @@ const router=createRouter({
             name:'details',
             path:'/details',
             component:GoodsDetails
+        }, 
+        {
+            path:'/cart',
+            component:ShopCart
         },
+
+        
         {
             name: 'OrderList',
             path: '/orderList',
@@ -40,6 +47,11 @@ const router=createRouter({
         },
    ]
 })
+   
+
+
+//
+
 
 //暴露出去router
 export default router

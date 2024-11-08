@@ -18,19 +18,12 @@
               @change="updateSelectedTotalPrice"
               :value="item.id" 
             />
-            <img :src="item.imageUrlUrl" alt="商品图片" class="item-image" />
             <div class="item-info">
               <h3 class="item-name">{{ item.name }}</h3>
               <p class="item-price">{{ formatPrice(item) }}</p>
-              <el-input-number
+              <el-input-number>
                 v-model="item.quantity"
-                :min="1"
-                :max="item.limitNum"
-                @change="updateSelectedTotalPrice"
-                class="quantity-input"
-              />
-              <p class="currency-type">货币类型: {{ item.currencyType === '0' ? '日用币' : '服装币' }}</p>
-              <el-button type="danger" @click="removeSelectedItems(item.id)">移除</el-button>
+              </el-input-number>
             </div>
           </div>
         </div>

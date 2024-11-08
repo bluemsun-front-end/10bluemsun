@@ -1,5 +1,5 @@
 <template>
-  <el-header>
+  <el-header height="85px">
     <div class="header-content">
       <div class="top_hello">
         <span style="margin-left: 40px;">爱心超市</span>
