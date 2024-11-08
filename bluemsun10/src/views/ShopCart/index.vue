@@ -11,25 +11,25 @@
           <el-checkbox v-model="isAllSelected" @change="toggleSelectAll">全选</el-checkbox>
         </div>
         <div class="card-container">
-          <div v-for="item in filteredItems" :key="item.id" class="item-card">
+          <div v-for="item in filteredItems" :key="item.goodsId" class="item-card">
             <el-checkbox    
               v-model="selectedItems"
               @change="updateSelectedTotalPrice"
-              :value="item.id" 
+              :value="item.goodsId" 
             />
             <img :src="item.imageUrlUrl" alt="商品图片" class="item-image" />
             <div class="item-info">
-              <h3 class="item-name">{{ item.name }}</h3>
+              <h3 class="item-name">{{ item.goodsName}}</h3>
               <p class="item-price">{{ formatPrice(item) }}</p>
               <el-input-number
-                v-model="item.quantity"
+                v-model="item.num"
                 :min="1"
                 :max="item.limitNum"
                 @change="updateSelectedTotalPrice"
                 class="quantity-input"
               />
               <p class="currency-type">货币类型: {{ item.currencyType === '0' ? '日用币' : '服装币' }}</p>
-              <el-button type="danger" @click="removeSelectedItems(item.id)">移除</el-button>
+              <el-button type="danger" @click="removeSelectedItems(item.goodsId)">移除</el-button>
             </div>
           </div>
         </div>
@@ -329,11 +329,12 @@ const isAllSelected = ref(false);
 
 // 获取用户购物车商品
 async function getItem() {
- Axios.get('http://106.54.24.243:8080/market/goods/list?name&currencyType&type&status&pageSize&pageNum&orderByColumn&isAsc')
-.then(function (response) {
-  cartItems.value=response.data.rows
+ Axios.get('http://106.54.24.243:8080/market/cart/list')
+.then(function (response) { 
+  console.log('getItem',response.data.data)
+  cartItems.value=response.data.data
   filteredItems.value=[...cartItems.value]
-  console.log('拿到货物',response.data);
+ 
 })
 .catch(function (error) {
    console.log(error);
@@ -369,15 +370,15 @@ onMounted(
 // 计算服装币和日用币的总价
 const clothingTotal = computed(() => {
   return selectedItems.value.reduce((total,id) => {
-    const item = cartItems.value.find(item =>item.id===id  &&  item.currencyType === '1');
-    return total + (item ? item.price * item.quantity : 0);
+    const item = cartItems.value.find(item =>item.goodsId===id  &&  item.currencyType === '1');
+    return total + (item ? item.price * item.num : 0);
   }, 0);
 });
 
 const dailyTotal = computed(() => {
   return selectedItems.value.reduce((total,id) => {
-    const item = cartItems.value.find(item =>item.id===id && item.currencyType === '0');
-    return total + (item ? item.price * item.quantity : 0);
+    const item = cartItems.value.find(item =>item.goodsId===id && item.currencyType === '0');
+    return total + (item ? item.price * item.num : 0);
   }, 0);
 });
 
@@ -394,8 +395,8 @@ const removeSelectedItems = async (itemId) => {
     console.log('removeItem', removeItem)
 
     if (response.data.code=='200') {
-      cartItems.value = cartItems.value.filter(item => item.id !== itemId);
-      filteredItems.value = filteredItems.value.filter(item => item.id !== itemId);
+      cartItems.value = cartItems.value.filter(item => item.goodsId !== itemId);
+      filteredItems.value = filteredItems.value.filter(item => item.goodsId !== itemId);
       ElMessage.success('选中商品删除成功');
     } else {
       ElMessage.warning('删除商品失败，请稍后重试！');
@@ -429,10 +430,10 @@ const checkout = () => {
 // 确认结算
 const reCheckout = async () => {
   const selectedItemsData = selectedItems.value.map(id => {
-    const item = cartItems.value.find(item => item.id === id);
+    const item = cartItems.value.find(item => item.goodsId === id);
     return {
-      goodsId: item.id,
-      num: item.quantity,
+      goodsId: item.goodsId,
+      num: item.num,
     };
   });
 
@@ -453,7 +454,7 @@ const reCheckout = async () => {
       checkoutInfo.value = false;
       ElMessage.success('结算成功');
       getCurrency();
-
+      getItem();
     } 
     
     else if(response.data.code=='500')
@@ -474,7 +475,7 @@ const reCheckout = async () => {
 // 切换全选状态
 const toggleSelectAll = () => {
   if (isAllSelected.value) {
-    selectedItems.value = filteredItems.value.map(item => item.id);
+    selectedItems.value = filteredItems.value.map(item => item.goodsId);
   } else {
     selectedItems.value = [];
   }
