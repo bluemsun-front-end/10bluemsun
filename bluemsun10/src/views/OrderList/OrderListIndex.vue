@@ -19,7 +19,7 @@
 
     <!-- 表格 -->
     <el-table :data="tableData" border style="width: 100%; height: 500px" v-loading="loadings.table">
-      <el-table-column prop="id" label="订单编号" minWidth="140" />
+ 
       <el-table-column prop="status" label="订单状态" minWidth="100">
         <template #default="{ row }">
           {{ statusMap[row.status] || '-' }}
@@ -30,15 +30,38 @@
       <el-table-column prop="generalBalance" label="日用币" minWidth="140" />
       <el-table-column prop="clothingBalance" label="服装币" minWidth="140" />
       <el-table-column prop="operate" label="操作" width="150">
-        <template #default="{ row }">
-          <el-popconfirm title="确定取消订单?" confirm-button-text="确定" cancel-button-text="取消" @confirm="cancelOrder(row)" placement="top">
-            <template #reference>
-              <el-button text type="primary" class="table-btn">取消订单</el-button>
-            </template>
-          </el-popconfirm>
-          <el-button text type="primary" class="table-btn ml10" @click="showDetail(row)">订单详情</el-button>
-        </template>
-      </el-table-column>
+  <template #default="{ row }">
+    <!-- 使用 v-show 仅当状态为1（失败）时，显示取消订单按钮，但仍保持占位 -->
+    <el-popconfirm
+      title="确定取消订单?"
+      confirm-button-text="确定"
+      cancel-button-text="取消"
+      @confirm="cancelOrder(row)"
+      placement="top"
+    >
+      <template #reference>
+        <el-button
+          v-show="row.status === '0'"
+          text
+          type="primary"
+          class="table-btn"
+        >
+          取消订单
+        </el-button>
+      </template>
+    </el-popconfirm>
+    <el-button
+      text
+      type="primary"
+      class="table-btn ml10"
+      @click="showDetail(row)"
+    >
+      订单详情
+    </el-button>
+  </template>
+</el-table-column>
+
+
     </el-table>
 
     <!-- 分页 -->
@@ -59,7 +82,7 @@
         <el-table :data="detailTableData" height="500" v-loading="loadings.detail">
           <el-table-column property="goodsImg" width="150" align="center">
             <template #default="{ row }">
-              <el-image :src="row.goodsImg" class="goods-img"></el-image>
+              <el-image :src="row.imageUrl" class="goods-img"></el-image>
             </template>
           </el-table-column>
           <el-table-column property="goodsName" label="商品名称" minWidth="200" />

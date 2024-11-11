@@ -6,11 +6,12 @@
       
       <el-card class="cart" :body-style="{ padding: '15px' }"> 
         <NavBar></NavBar>
-        <h2 class="cart-title">购物车</h2>
-        <strong class="balance">
-          您的当前余额: 服装币: ¥{{ userBalance?.clothingBalance ? userBalance.clothingBalance.toFixed(2) : '0.00' }} |
-          日用币: ¥{{ userBalance?.generalBalance ? userBalance.generalBalance.toFixed(2) : '0.00' }}
-        </strong>
+     
+          <el-card class="cart-card" shadow="hover">
+        <div class="cart-total">
+    <strong>总价: 服装币: ¥{{ clothingTotal.toFixed(2) }} | 日用币: ¥{{ dailyTotal.toFixed(2) }}</strong>
+        </div>
+          </el-card>
         <div>
           <el-checkbox v-model="isAllSelected" @change="toggleSelectAll">全选</el-checkbox>
         </div>
@@ -36,7 +37,7 @@
               <el-button type="danger" @click="removeSelectedItems(item.goodsId)">移除</el-button>
             </div>
           </div>
-        </div>
+        </div> 
         <div v-if="filteredItems.length === 0" class="empty-cart">
           <img src="../background/emptyCart.png" alt="空购物车" class="empty-cart-image">
           <p class="empty-cart-text">您的购物车是空的</p>
@@ -52,14 +53,28 @@
         </div>   
       </el-card>
     </div> 
-    <div class="cart-total">
-      <strong>总价: 服装币: ¥{{ clothingTotal.toFixed(2) }} | 日用币: ¥{{ dailyTotal.toFixed(2) }}</strong>
-    </div>
+    
   </div>
 </template>
 
 
 <style scoped> 
+
+/* 总价的样式 */ 
+.cart-card {
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f7f8fa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 10px;
+}
+
+.cart-total {
+  font-size: 1.5rem;
+  color: #409EFF;
+  text-align: center;
+}
+
 
 /* 购物车商品样式 */
 .card-container {
