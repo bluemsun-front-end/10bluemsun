@@ -38,9 +38,9 @@
           </div>
         </div>
         <div v-if="filteredItems.length === 0" class="empty-cart">
-          <img src="../svg/empty.jpg" alt="空购物车" class="empty-cart-image">
+          <img src="../background/emptyCart.png" alt="空购物车" class="empty-cart-image">
           <p class="empty-cart-text">您的购物车是空的</p>
-          <el-button type="primary" class="empty-cart-button">继续购物</el-button>
+          <el-button type="primary" class="empty-cart-button" @click="toHome">继续购物</el-button>
         </div>
         <div v-if="checkoutInfo" class="checkout-info">
           <p class="checkout-total">结算总额: 服装币: ¥{{ clothingTotal.toFixed(2) }} | 日用币: ¥{{ dailyTotal.toFixed(2) }}</p>
@@ -59,14 +59,16 @@
 </template>
 
 
-<style scoped>
+<style scoped> 
+
+/* 购物车商品样式 */
 .card-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px; 
-  background-image: url('../background/cart.png');
+  background-image: url('../background/cartBackground.png');
 }
 
 .item-card {
@@ -94,16 +96,20 @@
   margin-right: 20px;
 }
 
+
+/* 标题样式 */
 .cart-title {
   font-size: 2.5rem;
   font-weight: 800;
   color: #409EFF;
   -webkit-background-clip: text;
- 
   text-align: center;
   margin-bottom: 20px;
 }
 
+
+
+/* 余额样式 */
 .balance { 
   color: #409EFF;
   font-size: 20px;
@@ -115,6 +121,9 @@
   padding: 10px;
 }
 
+
+
+/* 结算样式 */
 .success {
   background: linear-gradient(45deg, #007bff, #00c6ff);
   color: #fff;
@@ -125,23 +134,63 @@
   background-position: right center;
 }
 
-.empty-cart-button {
-  background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
-  padding: 8px 16px;
+
+/* 
+购物车为空的样式 */
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f9f9f9;
   border-radius: 8px;
-  animation: pulse 1.5s infinite;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-@keyframes pulse {
+.empty-cart-image {
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
+  animation: bounce 1.5s infinite;
+}
+
+.empty-cart-text {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.empty-cart-button {
+  font-size: 1rem;
+  color: #fff;
+  background-color: #409EFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.empty-cart-button:hover {
+  background-color: #66b1ff;
+}
+
+/* 动画效果 */
+@keyframes bounce {
   0%, 100% {
-    background-color: #007bff;
+    transform: translateY(0);
   }
   50% {
-    background-color: #00c6ff;
+    transform: translateY(-10px);
   }
 }
+
 </style>
 
 
@@ -149,6 +198,7 @@
 
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import Axios from '../Axios'
@@ -156,12 +206,25 @@ import NavBar from '@/components/NavBar/index.vue'
 // 商品数据
 
 const cartItems = ref([]);
-
 const filteredItems = ref([...cartItems.value]);
 const selectedItems = ref([]);
 const userBalance = ref([]);
 const checkoutInfo = ref(false);
 const isAllSelected = ref(false);
+
+//定义路由
+const router=useRouter(); 
+
+
+
+//商品为空是跳转到主页
+
+
+const toHome=()=>
+{   console.log('跳转')
+    router.push('/home')
+}
+
 
 
 // 获取用户购物车商品
