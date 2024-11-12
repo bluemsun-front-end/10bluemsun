@@ -9,7 +9,7 @@
           <template #footer>
             <div class="details">
               <div class="price">{{ product.currencyType}}:{{ product.price }}</div>
-              <div class="num">库 存：{{ product.limitNum }}</div>
+              <div class="num">库 存：{{ product.amount}}</div>
             </div>
             <div class="btn">
               <RouterLink :to="{ path: '/details', query: { id: product.id } }" active-class="active">
@@ -57,8 +57,8 @@ watch(() => props.products, (newProducts) => {
   margin: 0px 75px 30px;
 }
 .item {
-  width: calc(25% - 10px);
-  margin-right: 10px;
+  /* width: calc(25% - 10px); */
+  margin-right: 25px;
   margin-bottom: 20px;
 }
 .item:last-child {
@@ -66,7 +66,7 @@ watch(() => props.products, (newProducts) => {
 }
 img {
   width: 100%;
-  height: auto;
+  height: 145px;
 }
 img:hover {
   transform: scale(1.1);

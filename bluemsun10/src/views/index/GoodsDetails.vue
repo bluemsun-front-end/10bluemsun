@@ -72,6 +72,27 @@
         alert('加入购物车失败')
       });
   };
+//   const addToCart = () => {
+//   // 检查库存是否大于0
+//   if (productDetail.value.amount > 0) {
+//     const payload = {
+//       goodsId: productDetail.value.id,
+//       num: num.value
+//     };
+//     axios.post('http://106.54.24.243:8080/market/cart', payload)
+//       .then(response => {
+//         console.log('加入购物车成功', response);
+//         alert('加入购物车成功');
+//       })
+//       .catch(error => {
+//         console.error('加入购物车失败', error);
+//         alert('加入购物车失败');
+//       });
+//   } else {
+//     // 如果库存为0，提示用户库存不足
+//     alert('库存不足，无法加入购物车');
+//   }
+// };
   const route = useRoute();
   const fetchProductDetail = async () => {
     const productId = route.query.id;

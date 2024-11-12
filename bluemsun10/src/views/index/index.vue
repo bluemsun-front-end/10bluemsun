@@ -7,14 +7,21 @@
     <SearchBox @search="handleSearch" />
     <ProductSearch />
     <ProductShow :products="displayedProducts" />
-    <el-pagination layout="prev, pager, next" :total="50" v-model:currentPage="currentPage"
-    pager-count="50"
-    @current-change="handlePageChange"
-    id="pagenation"/>
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="totalNum"
+      :page-size="8"
+      v-model:currentPage="currentPage"
+      pager-count="50"
+      @current-change="handlePageChange"
+      id="pagenation"
+    />
   </div>
 </template>
+
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch} from 'vue';
 import NavBar from '@/components/NavBar/index.vue';
 import ProductCarrousel from '@/views/index/ProductCarrousel/index.vue';
 import SearchBox from '@/views/index/SearchBox/index.vue';
@@ -24,6 +31,7 @@ import axios from 'axios';
 
 const displayedProducts = ref([]);
 const currentPage = ref(1);
+const totalNum = ref(0); // 存储商品总数的响应式变量
 
 const authToken = localStorage.getItem('token');
 const clientId = localStorage.getItem('client_id');
@@ -46,7 +54,7 @@ const loadProducts = (pageNum) => {
   axios
     .get('http://106.54.24.243:8080/market/goods/list', {
       params: {
-        pageSize: 1,
+        pageSize: 8,
         pageNum: pageNum,
         currencyType: category.value,
         name: search.value,
@@ -55,14 +63,11 @@ const loadProducts = (pageNum) => {
         orderByColumn: 'price'
       },
     })
-    // .then(response => {
-    //   displayedProducts.value = response.data.rows;
-    // })
     .then(response => {
-      const currencyTypeMap = { '0': '日用币', '1': '服装币' };
+      totalNum.value = response.data.total; 
       displayedProducts.value = response.data.rows.map(product => ({
         ...product,
-        currencyType: currencyTypeMap[product.currencyType] || product.currencyType
+        currencyType: {'0': '日用币', '1': '服装币'}[product.currencyType] || product.currencyType
       }));
     })
     .catch(error => {
@@ -78,6 +83,7 @@ const handlePageChange = (newPage) => {
 
 onMounted(() => {
   loadProducts(currentPage.value);
+  console.log('Initial totalNum:', totalNum.value); 
 });
 
 // 监听变化并重新加载商品
@@ -114,6 +120,7 @@ watch(isasc, (newVal) => {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  margin-bottom:30px;
 }
 
 </style>

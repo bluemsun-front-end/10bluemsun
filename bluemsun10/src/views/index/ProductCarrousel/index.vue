@@ -1,37 +1,4 @@
-<!-- @ -0,0 +1,32 @@
-<template>
-  <el-carousel :interval="5000" arrow="always">
-    <el-carousel-item v-for="item in 4" :key="item">
-      <h3 text="2xl" justify="center">{{ item }}</h3>
-    </el-carousel-item>
-  </el-carousel>
-</template>
-
-<style scoped>
-.el-carousel{
-  /* float:left; */
-  width:45vw;
-  height:300px;
-  margin-right:1vw;
-}
-
-.el-carousel__item h3 {
-  color: #475669;
-  opacity: 0.75;
-  line-height: 300px;
-  margin: 0;
-  text-align: center;
-}
-
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
-}
-</style> -->
-<template>
+<!-- <template>
   <el-carousel :interval="4000" type="card" height="200px">
     <el-carousel-item v-for="item in 6" :key="item">
       <div class="carousel-image" :style="{'background-image': 'url(your-image-url)'}"></div>
@@ -49,13 +16,7 @@
   padding-bottom:20px;
   padding-top:50px;
 }
-/* .el-carousel__item h3 {
-  color: #475669;
-  opacity: 0.75;
-  line-height: 500px;
-  margin: 0;
-  text-align: center;
-} */
+
 .el-carousel__item {
   height: 400px; /* 设置轮播项的高度 */
   display: flex;
@@ -69,5 +30,55 @@
 
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
+}
+</style> -->
+<template>
+  <el-carousel :interval="4000" type="card" height="200px">
+    <el-carousel-item v-for="(item, index) in images" :key="index">
+      <div class="carousel-image" :style="{'background-image': `url(`+item+')'}"></div>
+    </el-carousel-item>
+  </el-carousel>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const images = ref([
+  'image/1.jpg',
+  'image/2.jpg',
+  'image/3.jpg',
+  'image/4.jpg',
+]);
+</script>
+
+<style scoped>
+.el-carousel {
+  width: 90vw;
+  height: 400px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  padding-top: 50px;
+}
+
+.el-carousel__item {
+  height: 400px; /* 设置轮播项的高度 */
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
+.carousel-image{
+  height: 100%;
+  width: 90vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 </style>
