@@ -72,7 +72,6 @@ const state = reactive({
 
 const { circleUrl } = toRefs(state);
 </script>
-
 <style scoped>
 .header-content {
   width: 92vw;
@@ -132,5 +131,9 @@ const { circleUrl } = toRefs(state);
 
 .menuList li:hover:not(.active) {
   border-bottom: 4px solid #409EFF; /* 鼠标悬停时的样式 */
+}
+
+.demo-avatar {
+  margin-right: 20px;
 }
 </style>

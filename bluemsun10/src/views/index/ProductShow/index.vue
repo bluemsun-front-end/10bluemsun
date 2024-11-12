@@ -39,7 +39,6 @@ const props = defineProps({
 watch(() => props.products, (newProducts) => {
   productlist.value = newProducts;
 }, { immediate: true });
-
 </script>
 
 <style scoped>
@@ -55,14 +54,29 @@ watch(() => props.products, (newProducts) => {
   flex-wrap: wrap;
   justify-content: flex-start;
   margin: 0px 75px 30px;
+  justify-content: center;
 }
 .item {
-  /* width: calc(25% - 10px); */
-  margin-right: 25px;
+  width: calc(25% - 10px);
+  margin-right: 10px;
   margin-bottom: 20px;
+  box-sizing: border-box; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center; 
+  text-align: center; 
 }
-.item:last-child {
-  margin-right: 0;
+
+.details, .btn {
+  width: 100%; 
+  box-sizing: border-box; 
+}
+.item:nth-child(4n) {
+  margin-right: 0; /* Remove margin for the last item in a row */
+}
+.item:nth-child(4n+1) {
+  margin-left: 0; /* Ensure first item in a new row has no left margin */
 }
 img {
   width: 100%;
@@ -91,8 +105,7 @@ img:hover {
   display: flex;
   justify-content: center;
 }
-
-a{
+a {
   text-decoration: none;
 }
 </style>
