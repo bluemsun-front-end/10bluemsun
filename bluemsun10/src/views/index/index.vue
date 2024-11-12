@@ -27,16 +27,14 @@ import ProductCarrousel from '@/views/index/ProductCarrousel/index.vue';
 import SearchBox from '@/views/index/SearchBox/index.vue';
 import ProductSearch from '@/views/index/ProductShow/ProductSearch/index.vue';
 import ProductShow from '@/views/index/ProductShow/index.vue';
-import axios from 'axios';
+
+import Axios from '../Axios/index'
 
 const displayedProducts = ref([]);
 const currentPage = ref(1);
 const totalNum = ref(0); // 存储商品总数的响应式变量
 
-const authToken = localStorage.getItem('token');
-const clientId = localStorage.getItem('client_id');
-axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
-axios.defaults.headers.common['clientId'] = clientId;
+
 
 // 提供响应式数据
 import { provide } from 'vue';
@@ -51,7 +49,7 @@ provide('isasc', isasc);
 
 // 加载商品列表
 const loadProducts = (pageNum) => {
-  axios
+ Axios
     .get('http://106.54.24.243:8080/market/goods/list', {
       params: {
         pageSize: 8,

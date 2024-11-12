@@ -13,15 +13,28 @@
         </div>
         <div class="card-container">
           <div v-for="item in filteredItems" :key="item.goodsId" class="item-card">
+          <div v-for="item in filteredItems" :key="item.goodsId" class="item-card">
             <el-checkbox    
               v-model="selectedItems"
               @change="updateSelectedTotalPrice"
               :value="item.goodsId" 
+              :value="item.goodsId" 
             />
+            <img :src="item.imageUrlUrl" alt="商品图片" class="item-image" />
             <img :src="item.imageUrlUrl" alt="商品图片" class="item-image" />
             <div class="item-info">
               <h3 class="item-name">{{ item.goodsName}}</h3>
+              <h3 class="item-name">{{ item.goodsName}}</h3>
               <p class="item-price">{{ formatPrice(item) }}</p>
+              <el-input-number
+                v-model="item.num"
+                :min="1"
+                :max="item.limitNum"
+                @change="updateSelectedTotalPrice"
+                class="quantity-input"
+              />
+              <p class="currency-type">货币类型: {{ item.currencyType === '0' ? '日用币' : '服装币' }}</p>
+              <el-button type="danger" @click="removeSelectedItems(item.goodsId)">移除</el-button>
               <el-input-number
                 v-model="item.num"
                 :min="1"
@@ -34,9 +47,12 @@
             </div>
           </div>
         </div> 
+        </div> 
         <div v-if="filteredItems.length === 0" class="empty-cart">
           <img src="../background/emptyCart.png" alt="空购物车" class="empty-cart-image">
+          <img src="../background/emptyCart.png" alt="空购物车" class="empty-cart-image">
           <p class="empty-cart-text">您的购物车是空的</p>
+          <el-button type="primary" class="empty-cart-button" @click="toHome">继续购物</el-button>
           <el-button type="primary" class="empty-cart-button" @click="toHome">继续购物</el-button>
         </div>
         <div v-if="checkoutInfo" class="checkout-info">

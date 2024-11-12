@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import { ref, reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-import { useNavBarData } from '@/api/useNavBarData'; 
+import { useNavBarData } from '@/stores/useNavBarData';
 
 const router = useRouter();
 const authToken = localStorage.getItem('token');

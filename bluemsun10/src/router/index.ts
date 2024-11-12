@@ -47,8 +47,16 @@ const router=createRouter({
         },
    ]
 })
-   
 
+
+
+router.beforeEach((to, from, next) => {
+    // 每次路由切换时执行的函数
+    console.log("每次路由切换时执行的函数");
+  
+    // 继续导航
+    next();
+  });
 
 //
 
