@@ -27,11 +27,12 @@
     "lib": ["esnext", "dom"],
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
-  }
+    "allowSyntheticDefaultImports": true,
+
+  },  
+  "moduleResolution": "node",
 }
