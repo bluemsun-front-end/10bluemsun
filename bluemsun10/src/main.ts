@@ -10,7 +10,6 @@ import App from './App.vue';
 const app = createApp(App); 
 const pinia=createPinia();
 app.use(ElementPlus, {locale: zhCn});
-app.use(createPinia())
 // 路由
 app.use(router);
 app.use(pinia)

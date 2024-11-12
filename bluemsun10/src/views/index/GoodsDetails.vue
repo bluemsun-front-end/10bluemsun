@@ -34,7 +34,7 @@
   
   <script setup>
   import { ref } from 'vue';
-  import axios from 'axios';
+  import Axios from '../Axios/index';
   import { useRouter } from 'vue-router';
   //
   import { useRoute } from 'vue-router';
@@ -62,7 +62,7 @@
       goodsId: productDetail.value.id,
       num: num.value
     };
-    axios.post('http://106.54.24.243:8080/market/cart', payload)
+    Axios.post('http://106.54.24.243:8080/market/cart', payload)
       .then(response => {
         console.log('加入购物车成功', response);
         alert('加入购物车成功')
@@ -76,7 +76,7 @@
   const fetchProductDetail = async () => {
     const productId = route.query.id;
     try {
-      const response = await axios.get(`http://106.54.24.243:8080/market/goods/${productId}`);
+      const response = await Axios.get(`http://106.54.24.243:8080/market/goods/${productId}`);
       productDetail.value = response.data.data;
       if(productDetail.value.currencyType==0)
       {

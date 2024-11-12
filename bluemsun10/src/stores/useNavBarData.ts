@@ -1,7 +1,6 @@
 // useNavBarData.ts
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
-
+import Axios from '../views/Axios/index'
 export function useNavBarData(token: string) {
   const generalBalance = ref(0);
   const clothingBalance = ref(0);
@@ -9,13 +8,9 @@ export function useNavBarData(token: string) {
 
   const fetchData = async () => {
     try {
-        const authToken = localStorage.getItem('token');
-        axios.defaults.headers.common['Authorization']= `Bearer ${authToken}`;
       // 获取校区名称
-      const campusResponse = await axios.get('http://106.54.24.243:8080/system/user/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const campusResponse = await Axios.get('http://106.54.24.243:8080/system/user/profile', {
+
       });
       if (campusResponse.data.code === 200 && campusResponse.data.data) {
         campusName.value = campusResponse.data.data.user.deptName;
@@ -24,10 +19,8 @@ export function useNavBarData(token: string) {
       }
 
       // 获取爱心币
-      const balanceResponse = await axios.get('http://106.54.24.243:8080/market/balance', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const balanceResponse = await Axios.get('http://106.54.24.243:8080/market/balance', {
+       
       });
       if (balanceResponse.data.code === 200 && balanceResponse.data.data) {
         generalBalance.value = balanceResponse.data.data.generalBalance;
