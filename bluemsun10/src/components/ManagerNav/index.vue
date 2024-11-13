@@ -7,14 +7,14 @@
       <div class="header_menu">
         <span class="cloud"></span>
         <ul class="menuList">
-         <li
-      v-for="(item, index) in menuItems"
-      :key="index"
-      :class="{active:(isActive===index)}"
-      @click="handleClick(index)"
-    >
-      {{ item.label }}
-    </li>
+          <li
+            v-for="(item, index) in menuItems"
+            :key="index"
+            :class="{active: isActive === index}"
+            @click="handleClick(index)"
+          >
+            {{ item.label }}
+          </li>
         </ul>
       </div>
       <el-row class="demo-avatar demo-basic">
@@ -31,20 +31,17 @@
 </template>
 
 <script lang="ts" setup>
-// import { watch } from 'fs';
-import { ref, reactive, toRefs,watch } from 'vue'
-  import { useRouter } from 'vue-router';
-  // import { onMounted } from 'vue';
-  const router=useRouter()
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const menuItems= [
-        { label: '管理货物'},
-        { label: '进货记录'},
-        { label: '订单管理'},
-        // { label: '退出登录'},
-      ]
+import { ref, reactive, toRefs, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();  // 用来获取当前路由信息
+
+const menuItems = [
+  { label: '管理货物' },
+  { label: '进货记录' },
+  { label: '订单管理' },
+];
 
 const state = reactive({
   circleUrl:
@@ -52,47 +49,60 @@ const state = reactive({
   squareUrl:
     'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
   sizeList: ['small', '', 'large'] as const,
-})
-const { circleUrl, squareUrl, sizeList } = toRefs(state)
-const isActive = ref(0); 
-const handleClick=(index)=>{
-  isActive.value=index
-  console.log(index);
-  if(index===0){
-    router.push('/manage')
-  }
-  if(index===1){
-    router.push('/record')
-  }
-  if(index===2){
-    router.push('/order')
-  }
-}
+});
 
-// forceUpdate()
+const { circleUrl, squareUrl, sizeList } = toRefs(state);
+
+// 当前选中的菜单项索引
+const isActive = ref(0);
+
+// 根据当前路由更新 active 样式
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath === '/manage') isActive.value = 0;
+    if (newPath === '/record') isActive.value = 1;
+    if (newPath === '/order') isActive.value = 2;
+  },
+  { immediate: true }  // 初始加载时也要更新一次
+);
+
+const handleClick = (index: number) => {
+  isActive.value = index;
+  if (index === 0) {
+    router.push('/manage');
+  }
+  if (index === 1) {
+    router.push('/record');
+  }
+  if (index === 2) {
+    router.push('/order');
+  }
+};
 </script>
 
 <style scoped>
-li{
-  cursor: default;
+li {
+  cursor: pointer;
 }
 .header-content {
-  display: flex; /* 使用 flexbox 布局 */
+  display: flex;
   width: 1300px;
   margin: auto;
-  justify-content: space-between; /* 均匀分配空间 */
-  align-items: center; /* 垂直居中对齐 */
-  height: 85px; /* 设置高度 */
+  justify-content: space-between;
+  align-items: center;
+  height: 85px;
   border-bottom: 1px solid rgb(243.9, 244.2, 244.8);
   box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
-.name{
+.name {
   color: rgb(51.2, 126.4, 204);
   font-weight: 700;
   font-size: 40px;
 }
-.top_hello, .money {
+.top_hello,
+.money {
   font-size: 18px;
 }
 
@@ -115,7 +125,7 @@ li{
   margin: 0 40px;
   margin-top: 10px;
 }
-.menuList li{
+.menuList li {
   box-sizing: border-box;
   line-height: 85px;
   height: 85px;
@@ -124,17 +134,16 @@ li{
   letter-spacing: 0.1em;
   display: inline-block;
   padding: 0 60px;
- text-decoration: none;
+  text-decoration: none;
 }
 
-.menuList li:hover{
+.menuList li:hover {
   border-bottom: 4px solid #409EFF;
   color: #409EFF;
 }
 
-.active{
-   border-bottom: 4px solid #409EFF;
-   color: #409EFF;
+.active {
+  border-bottom: 4px solid #409EFF;
+  color: #409EFF;
 }
-
 </style>

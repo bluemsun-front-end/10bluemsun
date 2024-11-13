@@ -44,7 +44,7 @@
             </form>
         </div>
         <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total="30" v-model="currentPage" size="large" page-size="6" page-count="50"
+            <el-pagination layout="prev, pager, next" :total=totalNum v-model="currentPage" size="large" page-size="6" page-count=50
             @current-change="handlePageChange"
             id="pagenation"/>
         </div>
@@ -252,7 +252,7 @@ onMounted(()=>{
          const response = await axios.post(`http://106.54.24.243:8080/market/goods`,requestData) 
             // console.log(response.data);
             // console.log(imageUrl.value);
-            
+            fetchGoods(currentPage.value)
         } catch (error) {
             console.error('请求商品数据失败:', error);
     }
@@ -299,7 +299,6 @@ const addFile = async (formData) => {
     };
     // 切换全选
     const toggleCheckAll = () => {
-        
         checkall.value=!checkall.value
         items.value.forEach(item => {
         item.checked = checkall.value;
@@ -321,6 +320,8 @@ const addFile = async (formData) => {
         axios.defaults.headers.common['clientId'] = clientId;
          const response = await axios.delete(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
       console.log(response.data);
+      fetchGoods(currentPage.value)
+    //   window.location.reload()
         } catch (error) {
             console.error('请求商品数据失败:', error);
     }
@@ -331,11 +332,12 @@ const addFile = async (formData) => {
     // 删除全部
     const deleteALl=()=>{
         for (let i = 0; i < items.value.length; i++){
-            if(items.value[i].checked==true){
+            if(items.value[i].checked===true){
                 delectGoods(items.value[i].id)
             }
         }
-        fetchGoods(currentPage)
+        checkall.value=false
+        // fetchGoods(currentPage)
     }
 
     
@@ -417,6 +419,7 @@ const currentPage=ref(1)
 const handlePageChange = (newPage) => {
  currentPage.value = newPage;
  fetchGoods(currentPage.value)
+ checkall.value=false
 };
 
 

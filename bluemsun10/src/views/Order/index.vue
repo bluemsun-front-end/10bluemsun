@@ -94,6 +94,7 @@ import Nav from '@/components/ManagerNav/index.vue'
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
+import { fa } from 'element-plus/es/locale';
 
 
 
@@ -124,6 +125,7 @@ const imageUrl = ref('你好');
 const displayed2=ref('none')
 const currentPage2=ref(1)
 const total=ref('1')
+const checkall = ref(false);
 let orderID
 const handlePageChange2 = (newPage) => {
  currentPage2.value = newPage;
@@ -206,7 +208,7 @@ onMounted(()=>{
 })
 
 // 单选全选
-const checkall = ref(false);
+
 
 const updateCheckAll = () => {
   checkall.value = orders.value.every(order => order.checked);
@@ -255,6 +257,7 @@ const currentPage=ref(1)
 const handlePageChange = (newPage) => {
  currentPage.value = newPage;
  fetchOrder(currentPage.value)
+ checkall.value=false
 };
 
 
