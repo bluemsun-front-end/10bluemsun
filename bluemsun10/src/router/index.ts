@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 //引入可能呈现的组件
 import GoodsDetails from '@/views/index/GoodsDetails.vue'
 import Home from '@/views/index/index.vue'; // 首页组件
-import Login from '@/views/index/login.vue';
+import Login from '@/components/Login/index.vue';
 import ShopCart from '@/views/ShopCart/index.vue';
 import Manage from '@/views/Manage/index.vue';
 import Order from '@/views/Order/index.vue';
