@@ -2,8 +2,11 @@ import {createRouter,createWebHistory} from 'vue-router'
 //引入可能呈现的组件
 import GoodsDetails from '@/views/index/GoodsDetails.vue'
 import Home from '@/views/index/index.vue'; // 首页组件
-import Login from '@/views/index/login.vue';
+// import Login from '@/views/index/login.vue';
 import ShopCart from '@/views/ShopCart/index.vue';
+import login2 from '@/views-file/login2.vue';
+
+import StudentsFile from '@/views-file/StudentsFile.vue';
 
 //创建路由器
 const router=createRouter({
@@ -45,7 +48,19 @@ const router=createRouter({
             name: 'home',
             component: Home
         },
-   ]
+
+        // //个人成长档案
+        // {
+        //     name:'growthFile',
+        //     path:'/growthfile',
+        //     component:StudentsFile
+        // },
+        // {//登录
+        //     path: '/',
+        //     name: 'login',
+        //     component: login2
+        // },
+    ]
 })
 
 
@@ -58,7 +73,7 @@ router.beforeEach((to, from, next) => {
     next();
   });
 
-//
+
 
 
 //暴露出去router
