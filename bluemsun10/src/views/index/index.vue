@@ -65,12 +65,17 @@ const loadProducts = (pageNum) => {
       },
     })
     .then(response => {
-      totalNum.value = response.data.total; 
-      displayedProducts.value = response.data.rows.map(product => ({
-        ...product,
-        currencyType: {'0': '日用币', '1': '服装币'}[product.currencyType] || product.currencyType
-      }));
-    })
+        totalNum.value = response.data.total; 
+        displayedProducts.value = response.data.rows.map(product => {
+        const status = product.status; 
+        //判断商品status
+        return {
+          ...product,
+          currencyType: {'0': '日用币', '1': '服装币'}[product.currencyType] || product.currencyType,
+          isShelved: status === '1'
+        };
+      });
+      })
     .catch(error => {
       console.error('加载商品失败', error);
     });

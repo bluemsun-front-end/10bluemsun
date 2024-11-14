@@ -1,10 +1,15 @@
 <template>
   <div class="all-goods">
     <div class="content">
-      <div class="item" v-for="product in productlist" :key="product.id">
-        <ProductInfo :name="product.name" :img-url="product.imageUrlUrl">
+      <div class="item" v-for="product in productlist" :key="product.id" >
+        <!-- 商品下架 -->
+          <ProductInfo :name="product.name  " :img-url="product.imageUrlUrl" :is-shelved="product.isShelved">
           <template #default>
-            <img :src="product.imageUrlUrl" />
+            <img :src="product.imageUrlUrl" :class="{ 'image-darken': product.isShelved }" />
+          </template>
+          <template #title>
+            <div v-if="product.isShelved" class="shelved-tag">已下架</div> 
+              <div class="title">{{ product.name }}</div>
           </template>
           <template #footer>
             <div class="details">
@@ -17,6 +22,7 @@
               </RouterLink>
             </div>
           </template>
+          
         </ProductInfo>
       </div>
     </div>
@@ -28,11 +34,13 @@ import { ref,  watch } from 'vue';
 import ProductInfo from '@/plugins/ProductInfo/index.vue';
 import { RouterLink } from 'vue-router';
 const productlist = ref([]);
+import { defineProps } from 'vue';
+
 
 const props = defineProps({
   products: {
     type: Array,
-    required: true
+    required: true,
   }
 });
 
@@ -46,6 +54,13 @@ watch(() => props.products, (newProducts) => {
   margin: 0;
   padding: 0;
 }
+ .title{
+    text-align: center;
+    font-size:21px;
+    font-weight: 800;
+    color:rgb(122, 121, 121);
+    margin-bottom:5px;
+ }
 .all-goods {
   padding: 20px;
 }
@@ -59,7 +74,7 @@ watch(() => props.products, (newProducts) => {
 .item {
   width: calc(25% - 10px);
   margin-right: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   box-sizing: border-box; 
   display: flex; 
   flex-direction: column; 
@@ -91,7 +106,7 @@ img:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 4px;
 }
 .price {
   margin-bottom: 8px;
@@ -107,5 +122,17 @@ img:hover {
 }
 a {
   text-decoration: none;
+}
+.image-darken {
+  filter: grayscale(100%) opacity(0.5); /* 变暗并降低透明度 */
+}
+.shelved-tag {
+  background-color: rgba(255, 0, 0, 0.5); /* 红色背景，透明度0.8 */
+  color: white;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left:62px;
+  margin-right:62px;
 }
 </style>
