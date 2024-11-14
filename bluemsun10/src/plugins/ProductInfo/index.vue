@@ -1,7 +1,8 @@
 <template>
     <div class="goods-disaplay">
         <slot></slot>
-        <h2>{{name}}</h2>
+        <!-- <h2>{{name}}</h2> -->
+         <slot name="title"></slot>
         <slot name="footer"></slot>
     </div>
 </template>
@@ -11,6 +12,7 @@
 </script>
 
 <style scoped>
+
 .goods-disaplay{
     /* background-color:rgb(235.9, 245.3, 255);
      */
@@ -19,8 +21,8 @@
     padding:1.5vw;
     /* width:17vw; */
     /* height: 50vh; */
-    height: 300px;
-    width:200px;
+    height: 283px;
+    width:180px;
 }
 .goods-disaplay:hover{
     box-shadow:0 0 10px rgb(51.2, 126.4, 204);
