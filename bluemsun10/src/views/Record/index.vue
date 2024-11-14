@@ -6,7 +6,7 @@
                 <h2>进货记录</h2>
                 <div>
                     <span>
-                    <input type="button" value="新增" id="add" @click="addAll">
+                    <!-- <input type="button" value="新增" id="add" @click="addAll"> -->
                 </span>
                 </div>
             </div>
@@ -232,6 +232,7 @@ const currentPage=ref(1)
 const handlePageChange = (newPage) => {
  currentPage.value = newPage;
  fetchRecord(currentPage.value)
+
 };
 </script>
 
@@ -406,9 +407,9 @@ main .form .form_main {
 
 main .form .form_main .tr {
     width: 1060px;
-    height: 40px;
+    height: 60px;
     text-align: center;
-    line-height: 40px;
+    line-height: 60px;
 }
 
 main .form .form_main .tr:first-child {
@@ -429,7 +430,7 @@ main .form .form_main .tr:first-child td{
   height: 60px;
 }
 main .form .form_main .tr img {
-    width: 70%;
+    width: 60%;
     height: 60%;
 }
 
