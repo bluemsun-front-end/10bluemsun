@@ -67,8 +67,15 @@
     };
     Axios.post('http://106.54.24.243:8080/market/cart', payload)
       .then(response => {
-        console.log('加入购物车成功', response);
-        alert('加入购物车成功');
+        if(response.data.code===500)
+        {
+          alert(response.data.msg);
+          console.log('商品下架', response);
+        }
+        else{
+          console.log('加入购物车成功', response);
+          alert('加入购物车成功');
+        }
       })
       .catch(error => {
         console.error('加入购物车失败', error);
