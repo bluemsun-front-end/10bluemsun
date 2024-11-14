@@ -110,12 +110,13 @@ export const useCartStore = defineStore('cartStore', () => {
     
     // 显示结算信息
     const checkout = () => {
-      if (clothingTotal.value + dailyTotal.value > 0) {
+      if (selectedItems.value.length > 0) {
         checkoutInfo.value = true;
       } else {
-        ElMessage.warning('购物车为空，无法结算！');
+        ElMessage.warning('购物车没有选中的商品，无法结算！');
       }
     };
+    
     
     // 确认结算
     const reCheckout = async () => {
