@@ -1,4 +1,5 @@
-<template>
+<template> 
+<title >123</title>
   <main>
     <Nav />
     <div class="form">
@@ -32,89 +33,80 @@
               <td>
                 <input type="button" value="核销" class="delete" @click="deleteOrder(index)" />
                 <input type="button" value="查看详情" class="delete" @click="detail(index)" />
-                
               </td>
             </tr>
           </table>
         </form>
       </div>
       <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total=50 v-model="currentPage" size="large"
-            @current-change="handlePageChange"
-            id="pagenation"/>
+        <el-pagination layout="prev, pager, next" :total="orderTotal" v-model="currentPage" :page-size="11"
+          @current-change="handlePageChange" size="large" id="pagenation"/>
       </div>
     </div>
     <div class="alter" :style="{display:displayed2}" style="height: 630px; margin-top:-300px;position:fixed;">
-        <div class="alter_title">查看详情</div>
-        <table>
-            <tr>
-                <td>名称：</td>
-                <td>{{goodsName}}</td>
-            </tr>
-            <tr>
-                <td>价格：</td>
-                <td>{{price}}</td>
-            </tr>
-            <tr>
-                <td>货币类型：</td>
-                <td>{{currencyType}}</td>
-            </tr>
-            <tr>
-                <td>数量：</td>
-                <td>{{amount}}</td>
-            </tr>
-            <tr>
-                <td>订单号：</td>
-                <td>{{orderId}}</td>
-            </tr>
-            <tr>
-                <td>货物编号：</td>
-                <td>{{goodsId}}</td>
-            </tr>
-            <tr>
-                <td>图片：</td>
-                <img :src="imageUrl" class="detailimag">
-            </tr>
-    </table>
-        <div class="bottom" style="bottom: 10px;">
-            <el-pagination layout="prev, pager, next" :total="50" v-model="currentPage2"
-            @current-change="handlePageChange2"
-            id="pagenation"/>
+      <div class="alter_title">查看详情</div>
+      <table>
+        <tr>
+          <td>名称：</td>
+          <td>{{goodsName}}</td>
+        </tr>
+        <tr>
+          <td>价格：</td>
+          <td>{{price}}</td>
+        </tr>
+        <tr>
+          <td>货币类型：</td>
+          <td>{{currencyType}}</td>
+        </tr>
+        <tr>
+          <td>数量：</td>
+          <td>{{amount}}</td>
+        </tr>
+        <tr>
+          <td>订单号：</td>
+          <td>{{orderId}}</td>
+        </tr>
+        <tr>
+          <td>货物编号：</td>
+          <td>{{goodsId}}</td>
+        </tr>
+        <tr>
+          <td>图片：</td>
+          <td><img :src="imageUrl" class="detailimag"></td>
+        </tr>
+      </table>
+      <div class="bottom" style="bottom: 10px;">
+        <el-pagination layout="prev, pager, next" :total="detailTotal" v-model="currentPage2"  :page-size="1"
+          @current-change="handlePageChange2" id="pagenation"/>
       </div>
       <div class="btns" style="margin-top: 15px;">
-         <button @click="defines">确定</button>
+        <button @click="defines">确定</button>
       </div>
     </div>
   </main>
 </template>
-
 
 <script setup lang="ts">
 import Nav from '@/components/ManagerNav/index.vue'
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
-import { fa } from 'element-plus/es/locale';
-
-
+import { pa } from 'element-plus/es/locale';
 
 interface Order {
   id: string;
-  status:string;
+  status: string;
   checked: boolean; 
-  userId:string,
-  username:string,
-  createTime:string,
-  clothingBalance:string,
-  generalBalance:string
+  userId: string;
+  username: string;
+  createTime: string;
+  clothingBalance: string;
+  generalBalance: string;
 }
 
-const orders = ref<Order[]>([
-  // { id: 'LX-202300', name: '火锅底料1', count: 12, price: 23,createTime:'2024-11-07 20:32:27', username:'马启豪',userId:"1851458105377296386",checked: false },
-]);
+const orders = ref<Order[]>([]);
 
-
-// 查看商品详情
+const currentPage = ref(1);
 const orderId = ref(1);
 const goodsId = ref(0);
 const amount = ref(1);
@@ -122,98 +114,97 @@ const currencyType = ref('日常');
 const price = ref('1');
 const goodsName = ref('1 ');
 const imageUrl = ref('你好');
-const displayed2=ref('none')
-const currentPage2=ref(1)
-const total=ref('1')
+const displayed2 = ref('none');
+const currentPage2 = ref(1);
+const orderTotal = ref(0); // 总订单数 
+const detailTotal=ref(0)
 const checkall = ref(false);
-let orderID
+let orderID;
+
 const handlePageChange2 = (newPage) => {
- currentPage2.value = newPage;
-  datailOrder(orderID,currentPage2.value)
+  currentPage2.value = newPage;
+
+  datailOrder(orderID, currentPage2.value);
+  
 };
-const detail=(index:number)=>{
-        displayed2.value="block"
-        orderID=orders.value[index].id
-        datailOrder(orderID,currentPage2.value)
-        // console.log(items.value[index].id)
-    }
-const datailOrder = async (id,current) => {
+
+const detail = (index: number) => {
+  displayed2.value = "block";
+  orderID = orders.value[index].id;
+  datailOrder(orderID, currentPage2.value);
+};
+
+const datailOrder = async (id, current) => {
   try {
-    console.log(current);
-    
-    const authToken=localStorage.getItem('token')
-    const clientId=localStorage.getItem('client_id')
+    const authToken = localStorage.getItem('token');
+    const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get(`http://106.54.24.243:8080/market/orderInfo/page`,{
-      params:{
-        orderId:orderID,
-        pageSize:1,
-        pageNum:current
+    
+    const response = await axios.get(`http://106.54.24.243:8080/market/orderInfo/page`, {
+      params: {
+        orderId: id,
+        pageSize: 1,
+        pageNum: current
       }
-    }) // 请求商品数据
-    // console.log(response.data.total);
-    total.value=response.data.total
-    goodsName.value=response.data.rows[0].goodsName
-    price.value=response.data.rows[0].price
-    if(response.data.rows[0].currencyType=='0')  currencyType.value='日常币'
-    else  currencyType.value='服装币'
-    amount.value=response.data.rows[0].amount
-    orderId.value=response.data.rows[0].orderId
-    goodsId.value=response.data.rows[0].goodsId
-    imageUrl.value=response.data.rows[0].imageUrl
+    });
+    console.log('整个详情', response)
+    console.log('详情的总数', response.data.total)
 
+    detailTotal.value = response.data.total;  // 更新总订单数
+    goodsName.value = response.data.rows[0].goodsName;
+    price.value = response.data.rows[0].price;
+    currencyType.value = response.data.rows[0].currencyType === '0' ? '日常币' : '服装币';
+    amount.value = response.data.rows[0].amount;
+    orderId.value = response.data.rows[0].orderId;
+    goodsId.value = response.data.rows[0].goodsId;
+    imageUrl.value = response.data.rows[0].imageUrl;
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
 };
-const defines=()=>{
-displayed2.value="none"
-}
-//发送获取货物的请求
+
+const defines = () => {
+  displayed2.value = "none";
+};
+
 const fetchOrder = async (current) => {
   try {
-    const authToken=localStorage.getItem('token')
-    const clientId=localStorage.getItem('client_id')
+    const authToken = localStorage.getItem('token');
+    const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get('http://106.54.24.243:8080/market/order/adminlist',{
-        params:{
-            pageSize:"11",
-            pageNum:current
-        }
-  }) // 请求商品数据
-    console.log(response.data.rows.length);
 
-    orders.value = response.data.rows;
-        for(let i=0;i<response.data.rows.length;i++){
-      if(response.data.rows[i].status=='2'){
-        orders.value[i].status='成功'
+    const response = await axios.get('http://106.54.24.243:8080/market/order/adminlist', {
+      params: {
+        pageSize: 11,
+        pageNum: current
       }
-      if(response.data.rows[i].status=='1'){
-        orders.value[i].status='失败'
+    });
+
+    orders.value = response.data.rows; 
+    orderTotal.value = response.data.total; // 更新总订单数 
+    orders.value.forEach((order, i) => {
+      if (order.status === '2') {
+        orders.value[i].status = '成功';
+      } else if (order.status === '1') {
+        orders.value[i].status = '失败';
+      } else if (order.status === '0') {
+        orders.value[i].status = '未知';
       }
-      if(response.data.rows[i].status=='0'){
-        orders.value[i].status='未知'
-      }
-    }
-    // console.log(items.value);
-    
+    });
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
 };
-onMounted(()=>{
-  fetchOrder(currentPage.value)
-})
 
-// 单选全选
-
+onMounted(() => {
+  fetchOrder(currentPage.value);
+});
 
 const updateCheckAll = () => {
   checkall.value = orders.value.every(order => order.checked);
 };
-
 
 const toggleCheckAll = () => {
   checkall.value = !checkall.value;
@@ -222,47 +213,39 @@ const toggleCheckAll = () => {
   });
 };
 
-//核销
-    const delectOrders = async (id) => {
-     try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-         const response = await axios.post(`http://106.54.24.243:8080/market/order/check/${id}`) // 请求商品数据
-      console.log(response.data);
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
-    }
-    };
-const deleteOrder = (index: number) => {
-  delectOrders(orders.value[index].id)
-  // orders.value.splice(index, 1); 
-  fetchOrder(currentPage.value)
+const delectOrders = async (id) => {
+  try {
+    const authToken = localStorage.getItem('token');
+    const clientId = localStorage.getItem('client_id');
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+    axios.defaults.headers.common['clientId'] = clientId;
+    
+    await axios.post(`http://106.54.24.243:8080/market/order/check/${id}`);
+  } catch (error) {
+    console.error('请求商品数据失败:', error);
+  }
 };
 
+const deleteOrder = (index: number) => {
+  delectOrders(orders.value[index].id);
+  fetchOrder(currentPage.value);
+};
 
 const deleteSelectedOrders = () => {
-  // orders.value = orders.value.filter(order => !order.checked); 
-  for (let i = 0; i < orders.value.length; i++){
-            if(orders.value[i].checked==true){
-                delectOrders(orders.value[i].id)
-            }
-        }
-        fetchOrder(currentPage.value)
+  orders.value.forEach(order => {
+    if (order.checked) {
+      delectOrders(order.id);
+    }
+  });
+  fetchOrder(currentPage.value);
 };
-// 分页器
-// 页码改变时重新加载商品
-const currentPage=ref(1)
+
 const handlePageChange = (newPage) => {
- currentPage.value = newPage;
- fetchOrder(currentPage.value)
- checkall.value=false
+  currentPage.value = newPage;
+  fetchOrder(currentPage.value);
+  checkall.value = false;
 };
-
-
 </script>
-
 
 <style scoped>
 /*分页器*/
@@ -427,6 +410,7 @@ main .form .form_top input {
     color: #fff;
     font-size: 17px;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 main .form .form_main {
@@ -511,5 +495,4 @@ main .form .form_bottom span {
     width: 40px;
     text-align: center;
 }
-        
 </style>

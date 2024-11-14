@@ -14,19 +14,22 @@
                 <form action="#">
                     <table>
                         <tr class="tr">
-                            <td>进货编号</td>
+                            <!-- <td>进货编号</td> -->
                             <td>货物名称</td>
                             <td>货物图片</td>
-                            <td>货物数量</td>
+                            <td>货物数量变化</td>
+                            <td>货物库存</td>
                             <td>操作</td>
                         </tr>
                         <tr class="tr" v-for="(item,index) in items" :key="item.id">
-                            <td class="id">{{ item.id }}</td>
+                            <!-- <td class="id">{{ item.id }}</td> -->
                             <td class="name">{{ item.name }}</td>
                             <td><img :src="item.imageUrl" alt=""></td>
-                            <td class="amount">{{ item.amount }}</td>
+                            <td>起始:{{item.originAmount}}&nbsp;&nbsp;&nbsp;
+                                现存:{{item.endAmount}}</td>
+                            <td class="amount">{{ item.endAmount }}</td>
                             <td>
-                                <input type="button" value="查看商品" class="delete" @click="detail(index)" />
+                                <input type="button" value="查看详情"  @click="detail(index)" />
                             </td>
                         </tr>
                     </table>
@@ -39,21 +42,7 @@
             id="pagenation"/>
         </div>
         </div>
-        <div class="alter" :style="{display:displayed}">
-        <div class="alter_title">新增进货记录</div>
-        <table>
-            <tr>
-                <td>货物编号：</td>
-                <td><input type="text" v-model="goodsId"></td>
-            </tr>
-            <tr>
-                <td>货物数量：</td>
-                <td><input type="text" v-model="amount"></td>
-            </tr>
-    </table>
-        <div class="btns"><button @click="addRecord">提交</button>
-         <button @click="cancel">取消</button></div>
-    </div>
+        
     <div class="alter" :style="{display:displayed2}" style="height: 600px; margin-top:-300px;position:fixed;">
         <div class="alter_title">查看详情</div>
         <table>
@@ -83,7 +72,7 @@
             </tr>
             <tr>
                 <td>库存：</td>
-                <td>{{amount}}</td>
+                <td>{{}}</td>
             </tr>
             <tr>
                 <td>单位：</td>
@@ -114,20 +103,20 @@ interface Item {
   endAmount:number;
 imageUrl:string
 }
-const name = ref('(*^▽^*)');
-const price = ref(0);
-const currencyType = ref('1');
-const type = ref('日常');
-const status = ref('1');
-const barcode = ref('1 ');
-const intro = ref('你好');
-const limitNum = ref(10);
-const limitType = ref('1');
-const quantifier = ref('1');
-const imageUrl=ref('')
-const imageUrlUrl = ref('');
-const id=ref('')
-const campus=ref('')
+ const name = ref('(*^▽^*)');
+ const price = ref(0);
+ const currencyType = ref('1');
+ const type = ref('日常');
+ const status = ref('1');
+ const barcode = ref('1 ');
+ const intro = ref('你好');
+ const limitNum = ref(10);
+ const limitType = ref('1');
+ const quantifier = ref('1');
+ const imageUrl=ref('')
+ const imageUrlUrl = ref('');
+ const id=ref('')
+ const campus=ref('')
 const displayed2=ref('none')
     const detail=(index:number)=>{
         displayed2.value="block"
@@ -141,25 +130,26 @@ const datailGoods = async (id,index) => {
     const clientId=localStorage.getItem('client_id')
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
+    const response = await axios.get(`http://106.54.24.243:8080/market/restock/${id}`) // 请求商品数据
     console.log(response.data.data);
+    
     // id.value=response.data.data.id
-    name.value=response.data.data.name
-    price.value=response.data.data.price
-    currencyType.value=response.data.data.currencyType
-    if(response.data.data.currencyType=='0') currencyType.value='日常币'
-    else currencyType.value='服装币'
-    type.value=response.data.data.type
-    status.value=response.data.data.status
-    barcode.value=response.data.data.barcode
-    intro.value=response.data.data.intro
-    limitNum.value=response.data.data.limitNum
-    limitType.value=response.data.data.limitType
-    quantifier.value=response.data.data.quantifier
-    imageUrl.value=response.data.data.imageUrl
-    campus.value=response.data.data.campus
-    imageUrlUrl.value=response.data.data.imageUrlUrl
-    imageUrl.value=response.data.data.imageUrl
+    // name.value=response.data.data.name
+    // price.value=response.data.data.price
+    // currencyType.value=response.data.data.currencyType
+    // if(response.data.data.currencyType=='0') currencyType.value='日常币'
+    // else currencyType.value='服装币'
+    // type.value=response.data.data.type
+    // status.value=response.data.data.status
+    // barcode.value=response.data.data.barcode
+    // intro.value=response.data.data.intro
+    // limitNum.value=response.data.data.limitNum
+    // limitType.value=response.data.data.limitType
+    // quantifier.value=response.data.data.quantifier
+    // imageUrl.value=response.data.data.imageUrl
+    // campus.value=response.data.data.campus
+    // imageUrlUrl.value=response.data.data.imageUrlUrl
+    // imageUrl.value=response.data.data.imageUrl
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
@@ -195,35 +185,6 @@ const fetchRecord = async (current) => {
 onMounted(()=>{
     fetchRecord(currentPage.value)
 })
-// 使用 ref 创建每个字段的响应式引用
-    const goodsId = ref('1');
-    const amount = ref(10);
-    const displayed=ref('none')
-    const addAll=()=>{
-        displayed.value='block'        
-    }
-    
-    const cancel=()=>{
-        displayed.value='none'
-    }
-    const addRecord = async () => {
-     try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-        const requestData = {
-            goodsId:goodsId.value,
-            amount:amount.value
-            };
-         const response = await axios.post(`http://106.54.24.243:8080/market/restock`,requestData) // 请求商品数据
-            console.log(response.data);
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
-    }
-    displayed.value="none"
-    fetchRecord(currentPage.value)
-    };
 
 
 // 分页器

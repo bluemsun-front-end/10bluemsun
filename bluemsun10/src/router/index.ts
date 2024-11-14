@@ -66,7 +66,7 @@ const router = createRouter({
         {
             path: '/manage',
             name: 'manage',
-            component: Manage
+            component: Manage,
         },
         {
             path: '/order',

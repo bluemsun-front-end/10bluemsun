@@ -18,7 +18,7 @@
                 <table>
                     <tr class="tr">
                         <td><input type="checkbox" id="checkall" @click="toggleCheckAll" v-model="checkall"></td>
-                        <td>商品编号</td>
+                        <!-- <td>商品编号</td> -->
                         <td>商品名称</td>
                         <td>商品图片</td>
                         <td>商品库存</td>
@@ -29,15 +29,16 @@
                         <td class="first">
                             <input type="checkbox" class="ck" v-model="item.checked" @change="updateCheckAll">
                         </td>
-                        <td class="ID">{{ item.id }}</td>
+                        <!-- <td class="ID">{{ item.id }}</td> -->
                         <td class="name">{{ item.name }}</td>
                         <td><img :src="item.imageUrlUrl" alt=""></td>
                         <td class="rest">{{ item.amount }}</td>
                         <td class="price">{{item.currencyType}}币：{{ item.price }}</td>
                         <td>
                             <input type="button" value="删除" class="delete" @click="deleteItem(index)">
-                            <input type="button" value="修改" class="modify" @click="modifyItem(index)"><br>
-                            <input type="button" value="查看详情" class="modify" @click="detail(index)" style="letter-spacing:0.1em">
+                            <input type="button" value="增加货物" class="addGoodsRecord" @click="addGoodsRecord(index)"><br/>
+                            <input type="button" value="修改" class="modify" @click="modifyItem(index)">
+                            <input type="button" value="查看详情" class="modify" @click="detail(index)">
                         </td>
                     </tr>
                 </table>
@@ -49,8 +50,23 @@
             id="pagenation"/>
         </div>
     </div>
-    <div class="alter" :style="{display:displayed}" style="position:fixed;">
-        <div class="alter_title">{{alter_title}}</div>
+    <div class="alter" :style="{display:displayed3}" style="height:300px;margin-top:-300px">
+        <div class="alter_title" style="padding: 30px;">新增进货记录</div>
+        <table>
+            <tr>
+                <td>货物名称：</td>
+                <td style="padding-left:20px;">{{name}}</td>
+            </tr>
+            <tr>
+                <td>货物数量：</td>
+                <td><input type="text" v-model="amount2"></td>
+            </tr>
+        </table>
+            <div class="btns"><button @click="addRecord">提交</button>
+            <button @click="cancel2">取消</button></div>
+     </div>
+    <div class="alter" :style="{display:displayed}" style="position:fixed;height:700px;">
+        <div class="alter_title" style="padding: 15px;">{{alter_title}}</div>
         <table>
             <tr>
                 <td>名称：</td>
@@ -64,10 +80,10 @@
                 <td>货币类型：</td>
                 <td><input type="text" v-model="currencyType"></td>
             </tr>
-            <tr>
-                <td>校区：</td>
+            <!-- <tr> -->
+                <!-- <td>校区：</td>
                 <td><input type="text" v-model="status"></td>
-            </tr>
+            </tr> -->
             <tr>
                 <td>限额：</td>
                 <td><input type="text" v-model="limitNum"></td>
@@ -76,9 +92,13 @@
                 <td>限制类型：</td>
                 <td><input type="text" v-model="limitType"></td>
             </tr>
-            <tr>
+            <tr v-if="alter_title=='修改货物'">
                 <td>库存：</td>
                 <td><input type="text" v-model="amount"></td>
+            </tr>
+            <tr v-if="alter_title=='增加货物'">
+                <td>介绍：</td>
+                <td><input type="text" v-model="intro"></td>
             </tr>
             <tr>
                 <td>单位：</td>
@@ -86,18 +106,24 @@
             </tr>
             <tr>
                 <td>图片：</td>
-                <input type="file" @change="handleFileChange"> 
+                <input type="file" @change="handleFileChange"  ref="fileInput"  style="display: none;">
+                <td v-if="alter_title=='修改货物'"><img :src="imageUrlUrl" class="detailimag" style="margin-left: 20px;" @click="handleFileChange2"></td>
+                <td v-if="alter_title=='增加货物'"><span style="padding: 20px; color:rgb(51.2, 126.4, 204) " @click="triggerFileInput">{{putimg}}</span></td>
             </tr>
     </table>
         <div class="btns"><button @click="addItem">提交</button>
          <button @click="cancel">取消</button></div>
     </div>
-    <div class="alter" :style="{display:displayed2}" style="height: 600px;position:fixed;">
-        <div class="alter_title">查看详情</div>
+    <div class="alter" :style="{display:displayed2}" style="height: 650px;position:fixed;">
+        <div class="alter_title" style="padding: 15px;">查看详情</div>
         <table>
             <tr>
                 <td>名称：</td>
                 <td>{{name}}</td>
+            </tr>
+            <tr>
+                <td>商品类型：</td>
+                <td>{{type}}</td>
             </tr>
             <tr>
                 <td>价格：</td>
@@ -107,10 +133,6 @@
                 <td>货币类型：</td>
                 <td>{{currencyType}}</td>
             </tr>
-            <!-- <tr>
-                <td>校区：</td>
-                <td>{{campus}}</td>
-            </tr> -->
             <tr>
                 <td>限额：</td>
                 <td>{{limitNum}}</td>
@@ -124,8 +146,8 @@
                 <td>{{amount}}</td>
             </tr>
             <tr>
-                <td>单位：</td>
-                <td>{{quantifier}}</td>
+                <td>介绍：</td>
+                <td>{{intro}}</td>
             </tr>
             <tr>
                 <td>图片：</td>
@@ -144,6 +166,7 @@ import Nav from '@/components/ManagerNav/index.vue'
 import {reactive,ref} from 'vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
+import { it } from 'element-plus/es/locale';
 // 使用 ref 创建每个字段的响应式引用
     const name = ref('(*^▽^*)');
     const price = ref(0);
@@ -190,7 +213,7 @@ const fetchGoods = async (current) => {
         }
     }) // 请求商品数据
     totalNum.value=response.data.total
-    console.log(response.data.rows);
+    console.log(response.data);
     items.value = response.data.rows;
     for(let i=0;i<response.data.rows.length;i++){
         if(items.value[i].currencyType=='0'){
@@ -213,6 +236,7 @@ onMounted(()=>{
 })
 
 //发送增加的请求
+const putimg=ref('点击提交图片')
     const addAll=()=>{
         displayed.value='block'
         alter_title.value='增加货物'        
@@ -224,7 +248,7 @@ onMounted(()=>{
             displayed.value='none'
         }
        if(alter_title.value==='修改货物'){
-        
+        modifyGoods(indexx.value)
        }
     }
     const cancel=()=>{
@@ -257,39 +281,6 @@ onMounted(()=>{
             console.error('请求商品数据失败:', error);
     }
     };
-// 处理文件选择
-const handleFileChange = (event) => {
-  const formData = new FormData();
-  const imageFile = event.target.files[0];
-  if (imageFile) {
-    formData.append('file', imageFile);
-    addFile(formData);
-  } else {
-    console.error('没有选择文件');
-  }
-};
-
-const addFile = async (formData) => {
-  try {
-    const authToken = localStorage.getItem('token');
-    const clientId = localStorage.getItem('client_id');
-
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'clientId': clientId
-      }
-    };
-
-    const response = await axios.post('http://106.54.24.243:8080/resource/oss/upload', formData, config);
-    // console.log(response.data.data.ossId);
-    imageUrl.value=response.data.data.ossId
-  } catch (error) {
-    console.error('上传失败:', error);
-    // 在这里添加用户友好的错误提示
-  }
-};
-
 
 
     // 更新全选状态
@@ -342,15 +333,63 @@ const addFile = async (formData) => {
 
     
     // 修改
-
-     const modifyGoods = async (id) => {
+// 处理文件选择
+const fileInput = ref(null);
+const handleFileChange = (event) => {
+  const formData = new FormData();
+  const imageFile = event.target.files[0];
+  if (imageFile) {
+    formData.append('file', imageFile);
+    addFile(formData)
+};
+}
+const addFile = async (formData) => {
+  try {
+    const authToken=localStorage.getItem('token')
+        const clientId=localStorage.getItem('client_id')
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+        axios.defaults.headers.common['clientId'] = clientId;
+    const response = await axios.post('http://106.54.24.243:8080/resource/oss/upload', formData);
+    // console.log(response.data.data.ossId);
+    imageUrl.value=response.data.data.ossId
+    putimg.value='提交图片成功'
+    getimag(imageUrl.value)
+  } catch (error) {
+    console.error('上传失败:', error);
+    // 在这里添加用户友好的错误提示
+  }
+  
+};
+// 图片回显
+const getimag=async (ossIds)=>{
+    console.log(ossIds);
+     const authToken=localStorage.getItem('token')
+        const clientId=localStorage.getItem('client_id')
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+        axios.defaults.headers.common['clientId'] = clientId;
+        const response = await axios.get(`http://106.54.24.243:8080/resource/oss/listByIds/${ossIds}`)
+        console.log(response.data.data[0].url);
+        imageUrlUrl.value=response.data.data[0].url
+}
+const handleFileChange2=(event)=>{
+fileInput.value.click();
+}
+// 触发文件输入点击事件的方法
+const triggerFileInput = () => {
+  fileInput.value.click();
+};
+     const modifyGoods = async (indexx) => {
+        console.log(indexx);
+        if(currencyType.value==='日常币')
+            currencyType.value='1'
+        else currencyType.value='0'
      try {
         const authToken=localStorage.getItem('token')
         const clientId=localStorage.getItem('client_id')
         axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
         axios.defaults.headers.common['clientId'] = clientId;
             let requestData = {
-            id:id,
+            id:items.value[indexx].id,
             name: name.value,
             price: price.value,
             currencyType: currencyType.value,
@@ -367,13 +406,31 @@ const addFile = async (formData) => {
             console.log(response.data);
         } catch (error) {
             console.error('请求商品数据失败:', error);
+         }
+    try {
+        const authToken=localStorage.getItem('token')
+        const clientId=localStorage.getItem('client_id')
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+        axios.defaults.headers.common['clientId'] = clientId;
+         const response = await axios.put(`http://106.54.24.243:8080/market/warehouse`,{
+                amount:amount.value,
+                goodsId:items.value[indexx].id
+         }) // 请求商品数据
+    //   console.log(response.data);
+      fetchGoods(currentPage.value)
+    //   window.location.reload()
+        } catch (error) {
+            console.error('请求商品数据失败:', error);
     }
+    displayed.value='none'
     };
+    const indexx=ref(0)
     const modifyItem = (index: number) => {
+        indexx.value=index
         displayed.value="block"
         alter_title.value="修改货物"
         datailGoods(items.value[index].id,index)
-        // modifyGoods(items.value[index].id)
+        // modifyGoods(index)
         // fetchGoods(currentPage.value)
     };
     // 查看详情
@@ -391,10 +448,13 @@ const addFile = async (formData) => {
     axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.get(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
     console.log(response.data.data);
+    // items.value[index]=response.data.data
     // id.value=response.data.data.id
     name.value=response.data.data.name
     price.value=response.data.data.price
     currencyType.value=response.data.data.currencyType
+    if(currencyType.value=='1') currencyType.value='日常币'
+    else currencyType.value='服装币'
     type.value=response.data.data.type
     status.value=response.data.data.status
     barcode.value=response.data.data.barcode
@@ -406,6 +466,7 @@ const addFile = async (formData) => {
     campus.value=response.data.data.campus
     imageUrlUrl.value=response.data.data.imageUrlUrl
     imageUrl.value=response.data.data.imageUrl
+    amount.value=response.data.data.amount
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
@@ -421,6 +482,38 @@ const handlePageChange = (newPage) => {
  fetchGoods(currentPage.value)
  checkall.value=false
 };
+// 增加进货记录
+// 使用 ref 创建每个字段的响应式引用
+    const goodsId = ref('1');
+    const amount2 = ref(10);
+    const displayed3=ref('none')
+    const addGoodsRecord=(index)=>{
+        displayed3.value='block'    
+        name.value=items.value[index].name
+        goodsId.value=items.value[index].id    
+        // console.log(items.value[index].id);
+    }
+    const cancel2=()=>{
+        displayed3.value='none'
+    }
+    const addRecord = async (index) => {
+     try {
+        const authToken=localStorage.getItem('token')
+        const clientId=localStorage.getItem('client_id')
+        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+        axios.defaults.headers.common['clientId'] = clientId;
+        const requestData = {
+            goodsId:goodsId.value,
+            amount:amount2.value
+            };
+         const response = await axios.post(`http://106.54.24.243:8080/market/restock`,requestData) // 请求商品数据
+            console.log(response.data);
+        } catch (error) {
+            console.error('请求商品数据失败:', error);
+    }
+    displayed3.value="none"
+    fetchGoods(currentPage.value)
+    };
 
 
 </script>
@@ -492,6 +585,9 @@ margin-left: -300px;
     display: flex;
     justify-content: center;
     align-content: center;
+    position: absolute;
+    bottom: 30px;
+    width: 600px;
 }
 
 /*分页器*/
@@ -603,7 +699,7 @@ main .form .form_main .tr {
 }
 
 main .form .form_main .tr td {
-    width: 180px;
+    width: 215px;
     height: 90px;
     cursor: default;
 }
