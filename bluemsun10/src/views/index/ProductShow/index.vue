@@ -2,6 +2,7 @@
   <div class="all-goods">
     <div class="content">
       <div class="item" v-for="product in productlist" :key="product.id" >
+        <!-- 商品下架 -->
           <ProductInfo :name="product.name  " :img-url="product.imageUrlUrl" :is-shelved="product.isShelved">
           <template #default>
             <img :src="product.imageUrlUrl" :class="{ 'image-darken': product.isShelved }" />

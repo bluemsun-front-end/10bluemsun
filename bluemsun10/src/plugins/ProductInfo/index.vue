@@ -12,6 +12,7 @@
 </script>
 
 <style scoped>
+
 .goods-disaplay{
     /* background-color:rgb(235.9, 245.3, 255);
      */

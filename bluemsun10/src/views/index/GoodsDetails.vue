@@ -59,7 +59,7 @@
   };
 
   const addToCart = () => {
-  // 检查库存是否大于0
+  // 检查库存是否大于0（修改）
   if (productDetail.value.amount > 0) {
     const payload = {
       goodsId: productDetail.value.id,
