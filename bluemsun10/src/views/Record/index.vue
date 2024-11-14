@@ -17,7 +17,7 @@
                             <!-- <td>进货编号</td> -->
                             <td>货物名称</td>
                             <td>货物图片</td>
-                            <td>货物数量变化</td>
+                            <td>进货增加</td>
                             <td>货物库存</td>
                             <td>操作</td>
                         </tr>
@@ -25,8 +25,7 @@
                             <!-- <td class="id">{{ item.id }}</td> -->
                             <td class="name">{{ item.name }}</td>
                             <td><img :src="item.imageUrl" alt=""></td>
-                            <td>起始:{{item.originAmount}}&nbsp;&nbsp;&nbsp;
-                                现存:{{item.endAmount}}</td>
+                            <td>{{item.endAmount-item.originAmount}}</td>
                             <td class="amount">{{ item.endAmount }}</td>
                             <td>
                                 <input type="button" value="查看详情"  @click="detail(index)" />
@@ -36,7 +35,7 @@
                 </form>
             </div>
             <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total="50" v-model="currentPage" size="large"
+            <el-pagination layout="prev, pager, next" :total="total" v-model="currentPage" size="large"
             pager-count="50"
             @current-change="handlePageChange"
             id="pagenation"/>
@@ -51,36 +50,28 @@
                 <td>{{name}}</td>
             </tr>
             <tr>
-                <td>价格：</td>
-                <td>{{price}}</td>
+                <td>起始数量：</td>
+                <td>{{originAmount}}</td>
             </tr>
             <tr>
-                <td>货币类型：</td>
-                <td>{{currencyType}}</td>
+                <td>现存数量：</td>
+                <td>{{endAmount}}</td>
             </tr>
             <!-- <tr>
                 <td>校区：</td>
                 <td>{{campus}}</td>
             </tr> -->
             <tr>
-                <td>限额：</td>
-                <td>{{limitNum}}</td>
-            </tr>
-            <tr>
-                <td>限制类型：</td>
-                <td>{{limitType}}</td>
+                <td>增加数量：</td>
+                <td>{{endAmount-originAmount}}</td>
             </tr>
             <tr>
                 <td>库存：</td>
-                <td>{{}}</td>
-            </tr>
-            <tr>
-                <td>单位：</td>
-                <td>{{quantifier}}</td>
+                <td>{{amount}}</td>
             </tr>
             <tr>
                 <td>图片：</td>
-                <img :src="imageUrlUrl" class="detailimag">
+                <img :src="imageUrl" class="detailimag">
             </tr>
     </table>
         <div class="btns">
@@ -94,6 +85,7 @@ import Nav from '@/components/ManagerNav/index.vue'
 import { reactive, ref } from 'vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
+import {ElMessage } from 'element-plus';
 interface Item {
   id: number;
   name: string;
@@ -103,53 +95,36 @@ interface Item {
   endAmount:number;
 imageUrl:string
 }
- const name = ref('(*^▽^*)');
- const price = ref(0);
- const currencyType = ref('1');
- const type = ref('日常');
- const status = ref('1');
- const barcode = ref('1 ');
- const intro = ref('你好');
- const limitNum = ref(10);
- const limitType = ref('1');
- const quantifier = ref('1');
+const total=ref(0);
+ const name = ref('');
+ const amount = ref(0);
+ const endAmount = ref(0);
+ const originAmount = ref(0);
  const imageUrl=ref('')
- const imageUrlUrl = ref('');
  const id=ref('')
  const campus=ref('')
 const displayed2=ref('none')
     const detail=(index:number)=>{
         displayed2.value="block"
-        datailGoods(items.value[index].goodsId,index)
+        datailGoods(items.value[index].id,index)
         // console.log(items.value[index].id);
         
     }
+    // 查看详情
 const datailGoods = async (id,index) => {
   try {
     const authToken=localStorage.getItem('token')
     const clientId=localStorage.getItem('client_id')
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get(`http://106.54.24.243:8080/market/restock/${id}`) // 请求商品数据
+    const response = await axios.get(`http://106.54.24.243:8080/market/restock/info/${id}`) 
     console.log(response.data.data);
-    
-    // id.value=response.data.data.id
-    // name.value=response.data.data.name
-    // price.value=response.data.data.price
-    // currencyType.value=response.data.data.currencyType
-    // if(response.data.data.currencyType=='0') currencyType.value='日常币'
-    // else currencyType.value='服装币'
-    // type.value=response.data.data.type
-    // status.value=response.data.data.status
-    // barcode.value=response.data.data.barcode
-    // intro.value=response.data.data.intro
-    // limitNum.value=response.data.data.limitNum
-    // limitType.value=response.data.data.limitType
-    // quantifier.value=response.data.data.quantifier
-    // imageUrl.value=response.data.data.imageUrl
-    // campus.value=response.data.data.campus
-    // imageUrlUrl.value=response.data.data.imageUrlUrl
-    // imageUrl.value=response.data.data.imageUrl
+    amount.value=response.data.data.amount
+    endAmount.value=response.data.data.endAmount
+    imageUrl.value=response.data.data.imageUrl
+    name.value=response.data.data.name
+    originAmount.value=response.data.data.originAmount
+
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
@@ -176,6 +151,7 @@ const fetchRecord = async (current) => {
   }) // 请求商品数据
     console.log(response.data);
     items.value = response.data.rows;
+     total.value=response.data.total
     console.log(items.value);
     
   } catch (error) {
@@ -248,7 +224,7 @@ margin-left: -300px;
 }
 .alter table{
     padding: 0 85px;
-    line-height: 45px;
+    line-height: 55px;
 
 }
 .alter table input{

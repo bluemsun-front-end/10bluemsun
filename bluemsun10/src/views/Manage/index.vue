@@ -44,8 +44,8 @@
                 </table>
             </form>
         </div>
-        <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total=totalNum v-model="currentPage" size="large" page-size="6" page-count=50
+          <div class="bottom">
+            <el-pagination layout="prev, pager, next" :total="total" v-model="currentPage" size="large"
             @current-change="handlePageChange"
             id="pagenation"/>
         </div>
@@ -166,7 +166,7 @@ import Nav from '@/components/ManagerNav/index.vue'
 import {reactive,ref} from 'vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
-import { it } from 'element-plus/es/locale';
+import {ElMessage } from 'element-plus';
 // 使用 ref 创建每个字段的响应式引用
     const name = ref('(*^▽^*)');
     const price = ref(0);
@@ -185,6 +185,7 @@ import { it } from 'element-plus/es/locale';
     const campus=ref('')
     const displayed=ref('none')
     const displayed2=ref('none')
+    const total=ref(0)
 interface Item {
   id: string;
   name: string;
@@ -195,7 +196,6 @@ interface Item {
   checked: boolean; // 用于单选框状态
 }
 const alter_title=ref('增加货物')
-const totalNum=ref(0)
 const items = ref<Item[]>([
     //   { id: 'LX-202300', name: '火锅底料11', imageUrlUrl: 'https://vichywhite.oss-cn-beijing.aliyuncs.com/wxy2023013440/202411021122649.png', amount: 12,  price: 23, checked: false }
     ]);
@@ -212,7 +212,7 @@ const fetchGoods = async (current) => {
             pageNum:current
         }
     }) // 请求商品数据
-    totalNum.value=response.data.total
+    total.value=response.data.total
     console.log(response.data);
     items.value = response.data.rows;
     for(let i=0;i<response.data.rows.length;i++){

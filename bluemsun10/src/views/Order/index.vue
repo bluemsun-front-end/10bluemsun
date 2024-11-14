@@ -1,5 +1,4 @@
-<template> 
-<title >123</title>
+<template>
   <main>
     <Nav />
     <div class="form">
@@ -14,7 +13,7 @@
           <table>
             <tr class="tr">
               <td><input type="checkbox" id="checkall" @click="toggleCheckAll" v-model="checkall" /></td>
-              <td>订单编号</td>
+              <!-- <td>订单编号</td> -->
               <td>订单时间</td>
               <td>订单状态</td>
               <td>用户名称</td>
@@ -25,13 +24,20 @@
               <td>
                 <input type="checkbox" class="ck" v-model="order.checked" @change="updateCheckAll" />
               </td>
-              <td class="ID">{{ order.id }}</td>
+              <!-- <td class="ID">{{ order.id }}</td> -->
               <td class="createTime">{{ order.createTime }}</td>
               <td class="status">{{ order.status }}</td>
               <td class="username">{{ order.username }}</td>
               <td class="userId">服装币:{{order.clothingBalance}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日常币:{{order.generalBalance}}</td>
               <td>
-                <input type="button" value="核销" class="delete" @click="deleteOrder(index)" />
+                <!-- 核销按钮，仅在状态为 "未知" 时显示 -->
+                <input 
+                  type="button" 
+                  value="核销" 
+                  class="delete" 
+                  v-if="order.status === '未知'" 
+                  @click="deleteOrder(index)" 
+                />
                 <input type="button" value="查看详情" class="delete" @click="detail(index)" />
               </td>
             </tr>
@@ -91,7 +97,7 @@ import Nav from '@/components/ManagerNav/index.vue'
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
-import { pa } from 'element-plus/es/locale';
+import { ElMessage } from 'element-plus';
 
 interface Order {
   id: string;
@@ -112,7 +118,7 @@ const goodsId = ref(0);
 const amount = ref(1);
 const currencyType = ref('日常');
 const price = ref('1');
-const goodsName = ref('1 ');
+const goodsName = ref('1 ' );
 const imageUrl = ref('你好');
 const displayed2 = ref('none');
 const currentPage2 = ref(1);
@@ -123,9 +129,7 @@ let orderID;
 
 const handlePageChange2 = (newPage) => {
   currentPage2.value = newPage;
-
   datailOrder(orderID, currentPage2.value);
-  
 };
 
 const detail = (index: number) => {
@@ -148,8 +152,6 @@ const datailOrder = async (id, current) => {
         pageNum: current
       }
     });
-    console.log('整个详情', response)
-    console.log('详情的总数', response.data.total)
 
     detailTotal.value = response.data.total;  // 更新总订单数
     goodsName.value = response.data.rows[0].goodsName;
@@ -226,19 +228,36 @@ const delectOrders = async (id) => {
   }
 };
 
-const deleteOrder = (index: number) => {
-  delectOrders(orders.value[index].id);
-  fetchOrder(currentPage.value);
+const deleteOrder = async (index: number) => {
+  if (orders.value[index].status === '未知') {  // 只有状态为"未知"时才允许删除
+    try {
+      await delectOrders(orders.value[index].id);
+      ElMessage.success('核销成功');
+      // 删除操作完成后刷新数据
+      fetchOrder(currentPage.value);
+    } catch (error) {
+      ElMessage.error('核销失败');
+    }
+  }  
 };
 
-const deleteSelectedOrders = () => {
-  orders.value.forEach(order => {
-    if (order.checked) {
-      delectOrders(order.id);
+const deleteSelectedOrders = async () => {
+  const selectedOrders = orders.value.filter(order => order.checked);
+  if (selectedOrders.length > 0) {
+    try {
+      // 批量删除选中的订单
+      await Promise.all(selectedOrders.map(order => delectOrders(order.id)));
+      ElMessage.success('核销成功');
+      // 删除操作完成后刷新数据
+      fetchOrder(currentPage.value);
+    } catch (error) {
+      ElMessage.error('核销失败');
     }
-  });
-  fetchOrder(currentPage.value);
+  } else {
+    ElMessage.warning('请选择订单进行核销');
+  }
 };
+
 
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;
