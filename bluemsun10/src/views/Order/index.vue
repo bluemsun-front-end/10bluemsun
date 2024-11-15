@@ -13,7 +13,6 @@
           <table>
             <tr class="tr">
               <td><input type="checkbox" id="checkall" @click="toggleCheckAll" v-model="checkall" /></td>
-              <!-- <td>订单编号</td> -->
               <td>订单时间</td>
               <td>订单状态</td>
               <td>用户名称</td>
@@ -24,13 +23,11 @@
               <td>
                 <input type="checkbox" class="ck" v-model="order.checked" @change="updateCheckAll" />
               </td>
-              <!-- <td class="ID">{{ order.id }}</td> -->
               <td class="createTime">{{ order.createTime }}</td>
               <td class="status">{{ order.status }}</td>
               <td class="username">{{ order.username }}</td>
               <td class="userId">服装币:{{order.clothingBalance}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日常币:{{order.generalBalance}}</td>
               <td>
-                <!-- 核销按钮，仅在状态为 "未知" 时显示 -->
                 <input 
                   type="button" 
                   value="核销" 
@@ -98,7 +95,6 @@ import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
-
 interface Order {
   id: string;
   status: string;
@@ -109,9 +105,7 @@ interface Order {
   clothingBalance: string;
   generalBalance: string;
 }
-
 const orders = ref<Order[]>([]);
-
 const currentPage = ref(1);
 const orderId = ref(1);
 const goodsId = ref(0);
@@ -122,29 +116,23 @@ const goodsName = ref('1 ' );
 const imageUrl = ref('你好');
 const displayed2 = ref('none');
 const currentPage2 = ref(1);
-const orderTotal = ref(0); // 总订单数 
+const orderTotal = ref(0); 
 const detailTotal=ref(0)
 const checkall = ref(false);
 let orderID;
 
-const handlePageChange2 = (newPage) => {
-  currentPage2.value = newPage;
-  datailOrder(orderID, currentPage2.value);
-};
-
+// 查看详情
 const detail = (index: number) => {
   displayed2.value = "block";
   orderID = orders.value[index].id;
   datailOrder(orderID, currentPage2.value);
 };
-
 const datailOrder = async (id, current) => {
   try {
     const authToken = localStorage.getItem('token');
     const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    
     const response = await axios.get(`http://106.54.24.243:8080/market/orderInfo/page`, {
       params: {
         orderId: id,
@@ -152,8 +140,7 @@ const datailOrder = async (id, current) => {
         pageNum: current
       }
     });
-
-    detailTotal.value = response.data.total;  // 更新总订单数
+    detailTotal.value = response.data.total;
     goodsName.value = response.data.rows[0].goodsName;
     price.value = response.data.rows[0].price;
     currencyType.value = response.data.rows[0].currencyType === '0' ? '日常币' : '服装币';
@@ -165,25 +152,23 @@ const datailOrder = async (id, current) => {
     console.error('请求商品数据失败:', error);
   }
 };
-
 const defines = () => {
   displayed2.value = "none";
 };
 
+// 获取列表渲染
 const fetchOrder = async (current) => {
   try {
     const authToken = localStorage.getItem('token');
     const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-
     const response = await axios.get('http://106.54.24.243:8080/market/order/adminlist', {
       params: {
         pageSize: 11,
         pageNum: current
       }
     });
-
     orders.value = response.data.rows; 
     orderTotal.value = response.data.total; // 更新总订单数 
     orders.value.forEach((order, i) => {
@@ -199,15 +184,15 @@ const fetchOrder = async (current) => {
     console.error('请求商品数据失败:', error);
   }
 };
-
+// 挂载时
 onMounted(() => {
   fetchOrder(currentPage.value);
 });
 
+// 单全选逻辑
 const updateCheckAll = () => {
   checkall.value = orders.value.every(order => order.checked);
 };
-
 const toggleCheckAll = () => {
   checkall.value = !checkall.value;
   orders.value.forEach(order => {
@@ -215,13 +200,14 @@ const toggleCheckAll = () => {
   });
 };
 
+
+// 核销商品
 const delectOrders = async (id) => {
   try {
     const authToken = localStorage.getItem('token');
     const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    
     await axios.post(`http://106.54.24.243:8080/market/order/check/${id}`);
   } catch (error) {
     console.error('请求商品数据失败:', error);
@@ -240,7 +226,6 @@ const deleteOrder = async (index: number) => {
     }
   }  
 };
-
 const deleteSelectedOrders = async () => {
   const selectedOrders = orders.value.filter(order => order.checked);
   if (selectedOrders.length > 0) {
@@ -258,11 +243,15 @@ const deleteSelectedOrders = async () => {
   }
 };
 
-
+// 分页器
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;
   fetchOrder(currentPage.value);
   checkall.value = false;
+};
+const handlePageChange2 = (newPage) => {
+  currentPage2.value = newPage;
+  datailOrder(orderID, currentPage2.value);
 };
 </script>
 
@@ -312,7 +301,9 @@ margin-left: -300px;
 .alter table{
     padding: 0 85px;
     line-height: 45px;
-
+}
+.alter table td{
+    width: 120px;
 }
 .alter table input{
     margin-left: 20px;

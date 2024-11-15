@@ -36,7 +36,6 @@
             </div>
             <div class="bottom">
             <el-pagination layout="prev, pager, next" :total="total" v-model="currentPage" size="large"
-            pager-count="50"
             @current-change="handlePageChange"
             id="pagenation"/>
         </div>
@@ -95,22 +94,20 @@ interface Item {
   endAmount:number;
 imageUrl:string
 }
-const total=ref(0);
- const name = ref('');
- const amount = ref(0);
- const endAmount = ref(0);
- const originAmount = ref(0);
- const imageUrl=ref('')
- const id=ref('')
- const campus=ref('')
+const total=ref(10);
+const name = ref('');
+const amount = ref(0);
+const endAmount = ref(0);
+const originAmount = ref(0);
+const imageUrl=ref('')
 const displayed2=ref('none')
-    const detail=(index:number)=>{
-        displayed2.value="block"
-        datailGoods(items.value[index].id,index)
-        // console.log(items.value[index].id);
-        
-    }
-    // 查看详情
+const items = ref<Item[]>([
+]);
+// 查看详情功能
+const detail=(index:number)=>{
+    displayed2.value="block"
+    datailGoods(items.value[index].id,index)
+}
 const datailGoods = async (id,index) => {
   try {
     const authToken=localStorage.getItem('token')
@@ -124,19 +121,15 @@ const datailGoods = async (id,index) => {
     imageUrl.value=response.data.data.imageUrl
     name.value=response.data.data.name
     originAmount.value=response.data.data.originAmount
-
   } catch (error) {
     console.error('请求商品数据失败:', error);
+    ElMessage.error('查看商品失败')
   }
 };
 const defines=()=>{
 displayed2.value="none"
 }
-const items = ref<Item[]>([
-//   { ID: 'LX-202300', name: '火锅底料11', stock: 12, campus: "净月", checked: false },
-//   { ID: 'LX-202301', name: '火锅底料22', stock: 10, campus: "净月", checked: false },
-//   { ID: 'LX-202302', name: '火锅底料33', stock: 15, campus: "净月", checked: false }
-]);
+// 获取进货记录列表
 const fetchRecord = async (current) => {
   try {
     const authToken=localStorage.getItem('token')
@@ -148,16 +141,21 @@ const fetchRecord = async (current) => {
             pageSize:6,
             pageNum:current
         }
-  }) // 请求商品数据
-    console.log(response.data);
+  }) 
+
     items.value = response.data.rows;
-     total.value=response.data.total
-    console.log(items.value);
+    total.value=response.data.total    
+    console.log(response.data);
+    console.log(total.value);
+    
     
   } catch (error) {
     console.error('请求商品数据失败:', error);
+    ElMessage.error('查看进货流标失败')
   }
 };
+
+// 挂载时渲染页面
 onMounted(()=>{
     fetchRecord(currentPage.value)
 })
@@ -169,7 +167,6 @@ const currentPage=ref(1)
 const handlePageChange = (newPage) => {
  currentPage.value = newPage;
  fetchRecord(currentPage.value)
-
 };
 </script>
 
@@ -225,7 +222,9 @@ margin-left: -300px;
 .alter table{
     padding: 0 85px;
     line-height: 55px;
-
+}
+.alter table td{
+    width: 120px;
 }
 .alter table input{
     margin-left: 20px;

@@ -44,8 +44,8 @@
                 </table>
             </form>
         </div>
-          <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total="total" v-model="currentPage" size="large"
+        <div class="bottom">
+            <el-pagination layout="prev, pager, next" :total="pagetotal" v-model="currentPage" size="large"
             @current-change="handlePageChange"
             id="pagenation"/>
         </div>
@@ -147,7 +147,7 @@
             </tr>
             <tr>
                 <td>介绍：</td>
-                <td>{{intro}}</td>
+                <td class="over">{{intro}}</td>
             </tr>
             <tr>
                 <td>图片：</td>
@@ -166,26 +166,28 @@ import Nav from '@/components/ManagerNav/index.vue'
 import {reactive,ref} from 'vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
-import {ElMessage } from 'element-plus';
+import {ElMessage} from 'element-plus';
 // 使用 ref 创建每个字段的响应式引用
-    const name = ref('(*^▽^*)');
-    const price = ref(0);
-    const currencyType = ref('1');
-    const type = ref('日常');
-    const status = ref('1');
-    const barcode = ref('1 ');
-    const intro = ref('你好');
-    const limitNum = ref(10);
-    const limitType = ref('1');
-    const amount=ref(10)
-    const quantifier = ref('1');
-    const imageUrl=ref('')
-    const imageUrlUrl = ref('');
-    const id=ref('')
-    const campus=ref('')
-    const displayed=ref('none')
-    const displayed2=ref('none')
-    const total=ref(0)
+const name = ref('(*^▽^*)');
+const price = ref(0);
+const currencyType = ref('1');
+const type = ref('日常');
+const status = ref('1');
+const barcode = ref('1 ');
+const intro = ref('你好');
+const limitNum = ref(10);
+const limitType = ref('1');
+const amount=ref(10)
+const quantifier = ref('1');
+const imageUrl=ref('')
+const imageUrlUrl = ref('');
+const id=ref('')
+const campus=ref('')
+const displayed=ref('none')
+const displayed2=ref('none')
+const pagetotal=ref(0)
+const alter_title=ref('增加货物')
+// 一个货物
 interface Item {
   id: string;
   name: string;
@@ -195,10 +197,9 @@ interface Item {
   currencyType:string,
   checked: boolean; // 用于单选框状态
 }
-const alter_title=ref('增加货物')
 const items = ref<Item[]>([
-    //   { id: 'LX-202300', name: '火锅底料11', imageUrlUrl: 'https://vichywhite.oss-cn-beijing.aliyuncs.com/wxy2023013440/202411021122649.png', amount: 12,  price: 23, checked: false }
     ]);
+
 //发送获取列表的请求
 const fetchGoods = async (current) => {
   try {
@@ -211,9 +212,8 @@ const fetchGoods = async (current) => {
             pageSize:6,
             pageNum:current
         }
-    }) // 请求商品数据
-    total.value=response.data.total
-    console.log(response.data);
+    }) 
+    pagetotal.value=response.data.total
     items.value = response.data.rows;
     for(let i=0;i<response.data.rows.length;i++){
         if(items.value[i].currencyType=='0'){
@@ -222,119 +222,117 @@ const fetchGoods = async (current) => {
         else{
             items.value[i].currencyType='服装'
         }
-    }
-    // console.log(items.value);
-    
+    }    
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
 };
 
-const selectedFile = ref(null);
+// 挂载时获取列表
 onMounted(()=>{
     fetchGoods(currentPage.value)
 })
 
 //发送增加的请求
 const putimg=ref('点击提交图片')
-    const addAll=()=>{
-        displayed.value='block'
-        alter_title.value='增加货物'        
-    }
-    const addItem=()=>{
-        if(alter_title.value==='增加货物'){
-             addGoods()
-            fetchGoods(currentPage.value)
-            displayed.value='none'
-        }
-       if(alter_title.value==='修改货物'){
-        modifyGoods(indexx.value)
-       }
-    }
-    const cancel=()=>{
+const addAll=()=>{
+    displayed.value='block'
+    alter_title.value='增加货物'        
+}
+const addItem=()=>{
+    if(alter_title.value==='增加货物'){
+        addGoods()
+        fetchGoods(currentPage.value)
         displayed.value='none'
     }
-    const addGoods = async () => {
-     try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-        const requestData = {
-            name: name.value,
-            price: price.value,
-            currencyType: currencyType.value,
-            type: type.value,
-            status: status.value,
-            barcode: barcode.value,
-            intro: intro.value,
-            limitNum: limitNum.value,
-            limitType: limitType.value,
-            quantifier: quantifier.value,
-            imageUrl:imageUrl.value,
-            };
-         const response = await axios.post(`http://106.54.24.243:8080/market/goods`,requestData) 
-            // console.log(response.data);
-            // console.log(imageUrl.value);
-            fetchGoods(currentPage.value)
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
+    if(alter_title.value==='修改货物'){
+    modifyGoods(indexx.value)
     }
-    };
+}
+const cancel=()=>{
+    displayed.value='none'
+}
+const addGoods = async () => {
+    currencyType.value=currencyType.value=='日常币'?'1':'0'
+    try {
+    const authToken=localStorage.getItem('token')
+    const clientId=localStorage.getItem('client_id')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+    axios.defaults.headers.common['clientId'] = clientId;
+    const requestData = {
+        name: name.value,
+        price: price.value,
+        currencyType: currencyType.value,
+        type: type.value,
+        status: status.value,
+        barcode: barcode.value,
+        intro: intro.value,
+        limitNum: limitNum.value,
+        limitType: limitType.value,
+        quantifier: quantifier.value,
+        imageUrl:imageUrl.value,
+        };
+        const response = await axios.post(`http://106.54.24.243:8080/market/goods`,requestData) 
+        fetchGoods(currentPage.value)
+        ElMessage.success('增加商品成功')
+    } catch (error) {
+        console.error('请求商品数据失败:', error);
+        ElMessage.error('增加商品失败')
+}
+};
 
+// 单全选逻辑
+// 更新全选状态
+const checkall=ref(false)
+const updateCheckAll = () => {
+    checkall.value=items.value.every(item => item.checked)
+};
+// 切换全选
+const toggleCheckAll = () => {
+    checkall.value=!checkall.value
+    items.value.forEach(item => {
+    item.checked = checkall.value;
+    })
+}
 
-    // 更新全选状态
-    const checkall=ref(false)
-    const updateCheckAll = () => {
-        checkall.value=items.value.every(item => item.checked)
-    };
-    // 切换全选
-    const toggleCheckAll = () => {
-        checkall.value=!checkall.value
-        items.value.forEach(item => {
-        item.checked = checkall.value;
-      })
-    }
-    
-    // 删除指定项
-    const deleteItem = (index: number) => {
-     console.log(items.value[index].id)
-     delectGoods(items.value[index].id)
+// 删除功能
+// 删除指定项
+const deleteItem = (index: number) => {
+    console.log(items.value[index].id)
+    delectGoods(items.value[index].id)
+fetchGoods(currentPage.value)
+};
+// 删除请求
+const delectGoods = async (id) => {
+    try {
+    const authToken=localStorage.getItem('token')
+    const clientId=localStorage.getItem('client_id')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+    axios.defaults.headers.common['clientId'] = clientId;
+    const response = await axios.delete(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
     fetchGoods(currentPage.value)
-    };
-    // 删除请求
-    const delectGoods = async (id) => {
-     try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-         const response = await axios.delete(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
-      console.log(response.data);
-      fetchGoods(currentPage.value)
-    //   window.location.reload()
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
-    }
-    };
-
-
-    
-    // 删除全部
-    const deleteALl=()=>{
-        for (let i = 0; i < items.value.length; i++){
-            if(items.value[i].checked===true){
-                delectGoods(items.value[i].id)
-            }
+    ElMessage.success('删除成功')
+    } catch (error) {
+        console.error('请求商品数据失败:', error);
+        ElMessage.error('删除失败')
+}   
+};
+// 删除全部
+const deleteALl=()=>{
+    for (let i = 0; i < items.value.length; i++){
+        if(items.value[i].checked===true){
+            delectGoods(items.value[i].id)
         }
-        checkall.value=false
-        // fetchGoods(currentPage)
     }
+    checkall.value=false
+}
 
-    
-    // 修改
-// 处理文件选择
+
+// 修改功能
+// 1.处理文件选择
+const selectedFile = ref(null);
 const fileInput = ref(null);
+// 上传文件
 const handleFileChange = (event) => {
   const formData = new FormData();
   const imageFile = event.target.files[0];
@@ -350,106 +348,100 @@ const addFile = async (formData) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
         axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.post('http://106.54.24.243:8080/resource/oss/upload', formData);
-    // console.log(response.data.data.ossId);
     imageUrl.value=response.data.data.ossId
     putimg.value='提交图片成功'
     getimag(imageUrl.value)
+    ElMessage.success('上传成功')
   } catch (error) {
-    console.error('上传失败:', error);
-    // 在这里添加用户友好的错误提示
+    ElMessage.error('上传失败')
   }
-  
 };
 // 图片回显
 const getimag=async (ossIds)=>{
-    console.log(ossIds);
-     const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-        const response = await axios.get(`http://106.54.24.243:8080/resource/oss/listByIds/${ossIds}`)
-        console.log(response.data.data[0].url);
-        imageUrlUrl.value=response.data.data[0].url
+    const authToken=localStorage.getItem('token')
+    const clientId=localStorage.getItem('client_id')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+    axios.defaults.headers.common['clientId'] = clientId;
+    const response = await axios.get(`http://106.54.24.243:8080/resource/oss/listByIds/${ossIds}`)
+    imageUrlUrl.value=response.data.data[0].url
 }
+// 上传图片的两个点击事件
 const handleFileChange2=(event)=>{
 fileInput.value.click();
 }
-// 触发文件输入点击事件的方法
 const triggerFileInput = () => {
   fileInput.value.click();
 };
-     const modifyGoods = async (indexx) => {
-        console.log(indexx);
-        if(currencyType.value==='日常币')
-            currencyType.value='1'
-        else currencyType.value='0'
-     try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-            let requestData = {
-            id:items.value[indexx].id,
-            name: name.value,
-            price: price.value,
-            currencyType: currencyType.value,
-            type: type.value,
-            status: status.value,
-            barcode: barcode.value,
-            intro: intro.value,
-            limitNum: limitNum.value,
-            limitType: limitType.value,
-            quantifier: quantifier.value,
-            imageUrl: imageUrl.value,
-            };
-         const response = await axios.put(`http://106.54.24.243:8080/market/goods`,requestData) 
-            console.log(response.data);
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
-         }
-    try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-         const response = await axios.put(`http://106.54.24.243:8080/market/warehouse`,{
-                amount:amount.value,
-                goodsId:items.value[indexx].id
-         }) // 请求商品数据
-    //   console.log(response.data);
-      fetchGoods(currentPage.value)
-    //   window.location.reload()
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
-    }
-    displayed.value='none'
+// 修改商品的接口和库存的接口
+const modifyGoods = async (indexx) => {
+console.log(indexx);
+if(currencyType.value==='日常币')
+    currencyType.value='1'
+else currencyType.value='0'
+try {
+const authToken=localStorage.getItem('token')
+const clientId=localStorage.getItem('client_id')
+axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+axios.defaults.headers.common['clientId'] = clientId;
+    let requestData = {
+    id:items.value[indexx].id,
+    name: name.value,
+    price: price.value,
+    currencyType: currencyType.value,
+    type: type.value,
+    status: status.value,
+    barcode: barcode.value,
+    intro: intro.value,
+    limitNum: limitNum.value,
+    limitType: limitType.value,
+    quantifier: quantifier.value,
+    imageUrl: imageUrl.value,
     };
-    const indexx=ref(0)
-    const modifyItem = (index: number) => {
-        indexx.value=index
-        displayed.value="block"
-        alter_title.value="修改货物"
-        datailGoods(items.value[index].id,index)
-        // modifyGoods(index)
-        // fetchGoods(currentPage.value)
-    };
-    // 查看详情
-    const detail=(index:number)=>{
-        displayed2.value="block"
-        datailGoods(items.value[index].id,index)
-        // console.log(items.value[index].id);
-        
+    const response = await axios.put(`http://106.54.24.243:8080/market/goods`,requestData) 
+    ElMessage.success('修改成功')    
+} catch (error) {
+    console.error('请求商品数据失败:', error);
+    ElMessage.error('修改失败')
     }
-    const datailGoods = async (id,index) => {
+try {
+    const authToken=localStorage.getItem('token')
+    const clientId=localStorage.getItem('client_id')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+    axios.defaults.headers.common['clientId'] = clientId;
+        const response = await axios.put(`http://106.54.24.243:8080/market/warehouse`,{
+            amount:amount.value,
+            goodsId:items.value[indexx].id
+        }) 
+    fetchGoods(currentPage.value)
+    ElMessage.success('修改库存成功')
+    } catch (error) {
+        console.error('请求商品数据失败:', error);
+        ElMessage.error('修改库存失败')
+}
+// 修改货物的弹窗
+displayed.value='none'
+};
+const indexx=ref(0)
+const modifyItem = (index: number) => {
+    indexx.value=index
+    displayed.value="block"
+    alter_title.value="修改货物"
+    datailGoods(items.value[index].id,index)
+};
+
+
+// 查看详情功能
+const detail=(index:number)=>{
+    displayed2.value="block"
+    datailGoods(items.value[index].id,index)
+}
+const datailGoods = async (id,index) => {
   try {
     const authToken=localStorage.getItem('token')
     const clientId=localStorage.getItem('client_id')
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
-    console.log(response.data.data);
-    // items.value[index]=response.data.data
-    // id.value=response.data.data.id
+    const response = await axios.get(`http://106.54.24.243:8080/market/goods/${id}`)
     name.value=response.data.data.name
     price.value=response.data.data.price
     currencyType.value=response.data.data.currencyType
@@ -469,11 +461,14 @@ const triggerFileInput = () => {
     amount.value=response.data.data.amount
   } catch (error) {
     console.error('请求商品数据失败:', error);
+    ElMessage.error('查看商品失败')
   }
 };
 const defines=()=>{
     displayed2.value="none"
 }
+
+
 // 分页器
 // 页码改变时重新加载商品
 const currentPage=ref(1)
@@ -482,43 +477,54 @@ const handlePageChange = (newPage) => {
  fetchGoods(currentPage.value)
  checkall.value=false
 };
+
+
 // 增加进货记录
 // 使用 ref 创建每个字段的响应式引用
-    const goodsId = ref('1');
-    const amount2 = ref(10);
-    const displayed3=ref('none')
-    const addGoodsRecord=(index)=>{
-        displayed3.value='block'    
-        name.value=items.value[index].name
-        goodsId.value=items.value[index].id    
-        // console.log(items.value[index].id);
-    }
-    const cancel2=()=>{
-        displayed3.value='none'
-    }
-    const addRecord = async (index) => {
-     try {
-        const authToken=localStorage.getItem('token')
-        const clientId=localStorage.getItem('client_id')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-        axios.defaults.headers.common['clientId'] = clientId;
-        const requestData = {
-            goodsId:goodsId.value,
-            amount:amount2.value
-            };
-         const response = await axios.post(`http://106.54.24.243:8080/market/restock`,requestData) // 请求商品数据
-            console.log(response.data);
-        } catch (error) {
-            console.error('请求商品数据失败:', error);
-    }
-    displayed3.value="none"
-    fetchGoods(currentPage.value)
-    };
+const goodsId = ref('1');
+const amount2 = ref(10);
+const displayed3=ref('none')
+const addGoodsRecord=(index)=>{
+    displayed3.value='block'    
+    name.value=items.value[index].name
+    goodsId.value=items.value[index].id    
+    // console.log(items.value[index].id);
+}
+const cancel2=()=>{
+    displayed3.value='none'
+}
+const addRecord = async (index) => {
+    try {
+    const authToken=localStorage.getItem('token')
+    const clientId=localStorage.getItem('client_id')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
+    axios.defaults.headers.common['clientId'] = clientId;
+    const requestData = {
+        goodsId:goodsId.value,
+        amount:amount2.value
+        };
+        const response = await axios.post(`http://106.54.24.243:8080/market/restock`,requestData)
+        ElMessage.success('增加进货成功')
+    } catch (error) {
+        console.error('请求商品数据失败:', error);
+        ElMessage.success('增加进货失败')
+}
+displayed3.value="none"
+fetchGoods(currentPage.value)
+};
 
 
 </script>
 
 <style scoped>
+.over{
+width: 100%;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 1;
+overflow: hidden;
+text-overflow: ellipsis;
+}
 * {
     padding: 0;
     margin: 0;
@@ -533,11 +539,11 @@ const handlePageChange = (newPage) => {
 }
 .alter{
     display: none;
-position: absolute;
-top: 50%;
-left: 50%;
-margin-top: -330px;
-margin-left: -300px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -330px;
+    margin-left: -300px;
    width: 600px;
    height: 660px;
    border: gray 2px solid;
@@ -560,6 +566,10 @@ margin-left: -300px;
     line-height: 45px;
 
 }
+.alter table td{
+    width: 150px;
+}
+
 .alter table input{
     margin-left: 20px;
     margin-bottom: 10px;
@@ -612,6 +622,7 @@ button {
     /* 让鼠标变小手 */
     cursor: pointer;
 }
+
 a {
     color: #409EFF;
     text-decoration: none;
