@@ -1,5 +1,6 @@
 <template>
-  <NavBar />
+  <div>
+    <NavBar />
   <div class="order-list">
     <!-- 筛选 -->
     <el-form :model="form" label-width="auto">
@@ -98,6 +99,7 @@
         <div class="total-num">共 {{ detailTableDataTotal }} 条数据</div>
       </div>
     </el-dialog>
+  </div>
   </div>
 </template>
 
