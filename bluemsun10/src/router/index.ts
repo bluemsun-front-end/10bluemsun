@@ -11,6 +11,7 @@ import Login from '@/components/Login/index.vue';
 import Manage from '@/views/Manage/index.vue';
 import Order from '@/views/Order/index.vue';
 import Record from '@/views/Record/index.vue'
+import index from '@/views-file/Login/index.vue';
 //创建路由器
 const router = createRouter({
     history: createWebHistory(),
@@ -36,11 +37,11 @@ const router = createRouter({
             name: 'home',
             component: Home
         },
-        {//登录
-            path: '/',
-            name: 'login',
-            component: Login
-        },
+        // {//登录
+        //     path: '/',
+        //     name: 'login',
+        //     component: Login
+        // },
         {
             name: 'shopcart',
             path: '/shopcart',
@@ -51,18 +52,25 @@ const router = createRouter({
             name: 'home',
             component: Home
         },
-
-        // //个人成长档案
-        // {
-        //     name:'growthFile',
-        //     path:'/growthfile',
-        //     component:StudentsFile
-        // },
-        // {//登录
-        //     path: '/',
-        //     name: 'login',
-        //     component: login2
-        // },
+        
+        //个人成长档案
+        {
+            path: '/',
+            name: 'index',
+            component: index
+        },
+        {
+            name:'growthFile',
+            path:'/growthfile',
+            component:StudentsFile
+        },
+       
+        {
+            path: '/studentFiles',
+            name: 'studentFiles',
+            component: import('@/views/Student/index.vue')
+        },
+        //
         {
             path: '/manage',
             name: 'manage',
