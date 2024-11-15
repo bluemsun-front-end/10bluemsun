@@ -95,6 +95,7 @@ import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
+import { fa } from 'element-plus/es/locale';
 interface Order {
   id: string;
   status: string;
@@ -202,14 +203,18 @@ const toggleCheckAll = () => {
 
 
 // 核销商品
+let flag=true
 const delectOrders = async (id) => {
   try {
     const authToken = localStorage.getItem('token');
     const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    await axios.post(`http://106.54.24.243:8080/market/order/check/${id}`);
-  } catch (error) {
+    const res=await axios.post(`http://106.54.24.243:8080/market/order/check/${id}`);
+    if(res.data.code===500){
+      flag=false
+    }
+  }catch (error) {
     console.error('请求商品数据失败:', error);
   }
 };
@@ -232,9 +237,13 @@ const deleteSelectedOrders = async () => {
     try {
       // 批量删除选中的订单
       await Promise.all(selectedOrders.map(order => delectOrders(order.id)));
-      ElMessage.success('核销成功');
       // 删除操作完成后刷新数据
+      if(flag===true) 
+        ElMessage.success('核销成功')
+      else
+        ElMessage.error('核销失败')
       fetchOrder(currentPage.value);
+      checkall.value=false
     } catch (error) {
       ElMessage.error('核销失败');
     }

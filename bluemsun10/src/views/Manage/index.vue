@@ -46,6 +46,7 @@
         </div>
         <div class="bottom">
             <el-pagination layout="prev, pager, next" :total="pagetotal" v-model="currentPage" size="large"
+            :page-size="6"
             @current-change="handlePageChange"
             id="pagenation"/>
         </div>
@@ -176,7 +177,7 @@ const status = ref('1');
 const barcode = ref('1 ');
 const intro = ref('你好');
 const limitNum = ref(10);
-const limitType = ref('1');
+const limitType = ref('每月');
 const amount=ref(10)
 const quantifier = ref('1');
 const imageUrl=ref('')
@@ -237,7 +238,15 @@ onMounted(()=>{
 const putimg=ref('点击提交图片')
 const addAll=()=>{
     displayed.value='block'
-    alter_title.value='增加货物'        
+    alter_title.value='增加货物' 
+    name.value=""
+    price.value=0
+    currencyType.value='1'
+    limitNum.value=10
+    limitType.value='每月'
+    intro.value=''
+    quantifier.value=''
+    putimg.value='点击提交图片'
 }
 const addItem=()=>{
     if(alter_title.value==='增加货物'){
@@ -253,6 +262,7 @@ const cancel=()=>{
     displayed.value='none'
 }
 const addGoods = async () => {
+    limitType.value=limitType.value=='每月'?'0':'1'
     currencyType.value=currencyType.value=='日常币'?'1':'0'
     try {
     const authToken=localStorage.getItem('token')
@@ -452,7 +462,7 @@ const datailGoods = async (id,index) => {
     barcode.value=response.data.data.barcode
     intro.value=response.data.data.intro
     limitNum.value=response.data.data.limitNum
-    limitType.value=response.data.data.limitType
+    limitType.value=response.data.data.limitType=='1'?'每月':"每学期"
     quantifier.value=response.data.data.quantifier
     imageUrl.value=response.data.data.imageUrl
     campus.value=response.data.data.campus

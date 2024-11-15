@@ -2,22 +2,6 @@
   <div>
     <NavBar />
   <div class="order-list">
-    <!-- 筛选 -->
-    <el-form :model="form" label-width="auto">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-form-item label="订单状态">
-            <el-select v-model="form.status" placeholder="请选择">
-              <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" @click="getList(query.pageNum, query.pageSize)">筛选</el-button>
-        </el-col>
-      </el-row>
-    </el-form>
-
     <!-- 表格 -->
     <el-table :data="tableData" border style="width: 100%; height: 500px" v-loading="loadings.table">
  

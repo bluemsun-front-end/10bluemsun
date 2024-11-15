@@ -36,6 +36,7 @@
             </div>
             <div class="bottom">
             <el-pagination layout="prev, pager, next" :total="total" v-model="currentPage" size="large"
+            :page-size="6"
             @current-change="handlePageChange"
             id="pagenation"/>
         </div>

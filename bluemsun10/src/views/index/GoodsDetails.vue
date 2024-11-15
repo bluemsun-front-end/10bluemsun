@@ -36,7 +36,8 @@
   import { ref } from 'vue';
   import Axios from '../Axios/index';
   import { useRouter } from 'vue-router';
-  //
+import {ElMessage} from 'element-plus';
+
   import { useRoute } from 'vue-router';
   //
   const productDetail = ref({});
@@ -69,21 +70,21 @@
       .then(response => {
         if(response.data.code===500)
         {
-          alert(response.data.msg);
+          ElMessage.success(response.data.msg);
           console.log('商品下架', response);
         }
         else{
           console.log('加入购物车成功', response);
-          alert('加入购物车成功');
+          ElMessage.success('加入购物车成功');
         }
       })
       .catch(error => {
         console.error('加入购物车失败', error);
-        alert('加入购物车失败');
+        ElMessage.success('加入购物车失败');
       });
   } else {
     // 如果库存为0，提示用户库存不足
-    alert('库存不足，无法加入购物车');
+    ElMessage.success('库存不足，无法加入购物车');
   }
 };
   const route = useRoute();

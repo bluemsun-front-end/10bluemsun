@@ -1,4 +1,5 @@
 <template>   
+<div>
   <NavBar />
   <div class="cart-card">
     <div class="cart-container"> 
@@ -37,7 +38,7 @@
           <el-button type="primary" class="empty-cart-button" @click="toHome">继续购物</el-button>
         </div>
         <div v-if="checkoutInfo" class="checkout-info">
-          <p class="checkout-total">结算总额: 服装币: ¥{{ clothingTotal.toFixed(2) }} | 日用币: ¥{{ dailyTotal.toFixed(2) }}</p>
+          <div class="checkout-total"><p>结算总额: 服装币: ¥{{ clothingTotal.toFixed(2) }} | 日用币: ¥{{ dailyTotal.toFixed(2) }}</p></div>
           <el-button type="primary" @click="reCheckout">确认结算</el-button>
           <el-button type="default" @click="checkoutInfo = false">取消</el-button>
         </div>  
@@ -59,6 +60,7 @@
     </div> 
     
   </div>
+</div>
 </template>
 
 
@@ -213,6 +215,11 @@
 
 .checkout-info { 
   margin-left:12vw;
+  margin-top:20px; 
+  margin-bottom: 20px;
+}
+.checkout-total{
+  margin: 20px 0;
 }
 /* 动画效果 */
 @keyframes bounce {
