@@ -284,7 +284,10 @@ const addGoods = async () => {
         };
         const response = await axios.post(`http://106.54.24.243:8080/market/goods`,requestData) 
         fetchGoods(currentPage.value)
-        ElMessage.success('增加商品成功')
+        if(response.data.code===200)
+            ElMessage.success('增加商品成功')
+        else
+            ElMessage.error('增加商品失败')
     } catch (error) {
         console.error('请求商品数据失败:', error);
         ElMessage.error('增加商品失败')
@@ -407,8 +410,11 @@ axios.defaults.headers.common['clientId'] = clientId;
     quantifier: quantifier.value,
     imageUrl: imageUrl.value,
     };
-    const response = await axios.put(`http://106.54.24.243:8080/market/goods`,requestData) 
-    ElMessage.success('修改成功')    
+    const response = await axios.put(`http://106.54.24.243:8080/market/goods`,requestData)
+    if(response.data.code===200) 
+        ElMessage.success('修改成功')
+    else
+    ElMessage.error('修改失败')
 } catch (error) {
     console.error('请求商品数据失败:', error);
     ElMessage.error('修改失败')
@@ -423,7 +429,10 @@ try {
             goodsId:items.value[indexx].id
         }) 
     fetchGoods(currentPage.value)
-    ElMessage.success('修改库存成功')
+    if(response.data.code===200) 
+        ElMessage.success('修改库存成功')
+    else
+        ElMessage.error('修改库存失败')
     } catch (error) {
         console.error('请求商品数据失败:', error);
         ElMessage.error('修改库存失败')
@@ -514,7 +523,10 @@ const addRecord = async (index) => {
         amount:amount2.value
         };
         const response = await axios.post(`http://106.54.24.243:8080/market/restock`,requestData)
-        ElMessage.success('增加进货成功')
+        if(response.data.code===200) 
+            ElMessage.success('增加进货成功')
+        else
+        ElMessage.success('增加进货失败')
     } catch (error) {
         console.error('请求商品数据失败:', error);
         ElMessage.success('增加进货失败')
