@@ -1,179 +1,193 @@
 <template>
 <main>
     <Nav/>
-    <div class="form">
+    <div class="form" style="width: 1300px;">
         <div class="form_top">
             <h2>商品信息列表</h2>
             <div>
-            <span>
-                <input type="button" value="删除" id="delect" @click="deleteALl">
+            <span >
+                <el-popconfirm title="确定删除？" @confirm="deleteALl">
+                <template #reference>
+                <el-button type="primary" size="large"  style="padding: 10px; font-size:16px">批量删除</el-button>
+                </template>
+            </el-popconfirm>
             </span>
-            <span>
-                <input type="button" value="新增" id="add" @click="addAll">
+            <span style="margin: 0 20px;">
+                <el-button type="primary" size="large" @click="addAll" style="padding: 10px; font-size:16px">新增商品</el-button>
             </span>
         </div>
         </div>
         <div class="form_main">
-            <form action="#">
-                <table>
-                    <tr class="tr">
-                        <td><input type="checkbox" id="checkall" @click="toggleCheckAll" v-model="checkall"></td>
-                        <!-- <td>商品编号</td> -->
-                        <td>商品名称</td>
-                        <td>商品图片</td>
-                        <td>商品库存</td>
-                        <td>商品价格</td>
-                        <td>操作</td>
-                    </tr>
-                    <tr class="tr" v-for="(item, index) in items" :key="item.id">
-                        <td class="first">
-                            <input type="checkbox" class="ck" v-model="item.checked" @change="updateCheckAll">
-                        </td>
-                        <!-- <td class="ID">{{ item.id }}</td> -->
-                        <td class="name">{{ item.name }}</td>
-                        <td><img :src="item.imageUrlUrl" alt=""></td>
-                        <td class="rest">{{ item.amount }}</td>
-                        <td class="price">{{item.currencyType}}币：{{ item.price }}</td>
-                        <td>
-                            <input type="button" value="删除" class="delete" @click="deleteItem(index)">
-                            <input type="button" value="增加货物" class="addGoodsRecord" @click="addGoodsRecord(index)"><br/>
-                            <input type="button" value="修改" class="modify" @click="modifyItem(index)">
-                            <input type="button" value="查看详情" class="modify" @click="detail(index)">
-                        </td>
-                    </tr>
-                </table>
-            </form>
+        <el-table :data="items" @selection-change="selected" border style="width: 1260px; margin:3px 0;">
+            <el-table-column type="selection" width="50"/>
+            <el-table-column prop="name" label="商品名称" width="210"/>
+            <el-table-column label="商品图片" width="278" height="120">
+                <template #default="scope">
+                    <el-image style="width: 200px; height: 100px" :src="scope.row.imageUrlUrl" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="商品库存" width="210"/>
+            <el-table-column prop="price" label="商品价格" width="210"/>
+            <el-table-column label="操作" width="300" >
+            <template #default="scope">
+            <el-popconfirm title="确定删除？" @confirm="deleteItem(scope.$index)">
+                <template #reference>
+                <el-button text type="primary" class="table-btn ml10">
+                        删除货物
+                </el-button>
+                </template>
+            </el-popconfirm>
+                    <el-button text type="primary" class="table-btn ml10" @click="addGoodsRecord(scope.$index)">
+                        增加货物
+                    </el-button><el-button text type="primary" class="table-btn ml10" @click="modifyItem(scope.$index)">
+                        修改货物
+                    </el-button><el-button text type="primary" class="table-btn ml10" @click="detail(scope.$index)">
+                        查看详情
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
         </div>
         <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total="pagetotal" v-model="currentPage" size="large"
-            :page-size="6"
-            @current-change="handlePageChange"
-            id="pagenation"/>
+            <el-pagination layout="prev,pager,next,jumper,total" :page-size="5" :total="pagetotal" v-model="currentPage" @current-change="handlePageChange"/>
         </div>
     </div>
-    <div class="alter" :style="{display:displayed3}" style="height:300px;margin-top:-300px">
-        <div class="alter_title" style="padding: 30px;">新增进货记录</div>
-        <table>
-            <tr>
-                <td>货物名称：</td>
-                <td style="padding-left:20px;">{{name}}</td>
-            </tr>
-            <tr>
-                <td>货物数量：</td>
-                <td><input type="text" v-model="amount2"></td>
-            </tr>
-        </table>
-            <div class="btns"><button @click="addRecord">提交</button>
-            <button @click="cancel2">取消</button></div>
+    <!-- 增加进货记录 -->
+    <el-dialog v-model="addRecords" title="增加进货记录" width="500" center="true" align-center >
+    <el-form :model="form1" ref="formRef" :rules="rules1">
+      <el-form-item label="商品名称：" :label-width="formLabelWidth" style="padding-bottom: 20px;" prop="name">
+        {{name}}
+      </el-form-item>
+      <el-form-item label="进货数量：" :label-width="formLabelWidth" prop="amount2">
+        <el-input v-model="form1.amount2" autocomplete="off" style="width:340px"/>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="cancel2" class="elbutns">取消</el-button>
+        <el-button type="primary" @click="submitForm1()" class="elbutns">
+          确认
+        </el-button>
+      </div>
+    </template>
+<!-- 增加商品 -->
+  </el-dialog>
+    <el-dialog  v-model="addItems" :title="alter_title" width="500" center="true" align-center>
+        <el-form
+            ref="ruleFormRef"
+            style="max-width: 400px"
+            :model="ruleForm"
+            :rules="rules"
+            label-width="auto"
+            class="demo-ruleForm"
+            :size="formSize"
+            status-icon
+    >
+    <el-form-item label="名称：" prop="name" class="custom-form-item">
+      <el-input v-model="ruleForm.name" />
+    </el-form-item>
+    <el-form-item label="价格：" prop="price" class="custom-form-item">
+        <el-input v-model="ruleForm.price" />
+    </el-form-item>
+        <el-form-item label="商品类型：" prop="type" class="custom-form-item">
+        <el-select v-model="ruleForm.type" placeholder="请选择">
+        <el-option label="日用品" value="0" style="padding-left: 10px;"/>
+        <el-option label="学习用品" value="1" style="padding-left: 10px;"/>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="货币类型：" prop="currencyType" class="custom-form-item">
+        <el-select v-model="ruleForm.currencyType" placeholder="请选择">
+        <el-option label="日用币" value="0" style="padding-left: 10px;"/>
+        <el-option label="服装币" value="1" style="padding-left: 10px;"/>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="商品状态：" prop="status" class="custom-form-item">
+      <el-segmented v-model="ruleForm.status" :options="statusoption" />
+    </el-form-item>
+    <el-form-item label="限额：" prop="limitNum" class="custom-form-item">
+        <el-input v-model="ruleForm.limitNum" />
+    </el-form-item>
+    <el-form-item label="限制类型：" prop="limitType" class="custom-form-item">
+      <el-radio-group v-model="ruleForm.limitType">
+        <el-radio value="0">日用品</el-radio>
+        <el-radio value="1" style="padding-left: 20px;">学习用品</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item v-if="alter_title=='修改货物'" label="库存：" prop="amount" class="custom-form-item">
+        <el-input v-model="ruleForm.amount" />
+    </el-form-item>
+    <el-form-item label="介绍：" prop="intro" class="custom-form-item">
+      <el-input v-model="ruleForm.intro" type="textarea" resize="none"/>
+    </el-form-item>
+    <el-form-item label="图片：" prop="imageUrl" class="custom-form-item">
+        <img :src="imageUrlUrl" v-if="alter_title=='修改货物'" class="detailimag" style="margin-left: 20px;" @click="handleFileChange2">
+    <input type="file" @change="handleFileChange"  ref="fileInput"  style="display: none;">
+      <el-button  v-if="alter_title=='增加货物'" :disabled="!loadflag" class="ml-3" type="primary" @click="triggerFileInput" style="padding: 10px;">
+        {{loadtitle}}
+      </el-button>
+</el-form-item>
+    <el-form-item>
+     <div class="btn">
+         <el-button type="primary"  @click="submitForm(ruleFormRef)" class="elbutns" style="margin-left: 170px;">
+        提交
+      </el-button>
+      <el-button @click="resetForm(ruleFormRef)" class="elbutns" style="margin-left: 50px;">取消</el-button>
      </div>
-    <div class="alter" :style="{display:displayed}" style="position:fixed;height:700px;">
-        <div class="alter_title" style="padding: 15px;">{{alter_title}}</div>
-        <table>
-            <tr>
-                <td>名称：</td>
-                <td><input type="text" v-model="name"></td>
-            </tr>
-            <tr>
-                <td>价格：</td>
-                <td><input type="text" v-model="price"></td>
-            </tr>
-            <tr>
-                <td>货币类型：</td>
-                <td><input type="text" v-model="currencyType"></td>
-            </tr>
-            <!-- <tr> -->
-                <!-- <td>校区：</td>
-                <td><input type="text" v-model="status"></td>
-            </tr> -->
-            <tr>
-                <td>限额：</td>
-                <td><input type="text" v-model="limitNum"></td>
-            </tr>
-            <tr>
-                <td>限制类型：</td>
-                <td><input type="text" v-model="limitType"></td>
-            </tr>
-            <tr v-if="alter_title=='修改货物'">
-                <td>库存：</td>
-                <td><input type="text" v-model="amount"></td>
-            </tr>
-            <tr v-if="alter_title=='增加货物'">
-                <td>介绍：</td>
-                <td><input type="text" v-model="intro"></td>
-            </tr>
-            <tr>
-                <td>单位：</td>
-                <td><input type="text" v-model="quantifier"></td>
-            </tr>
-            <tr>
-                <td>图片：</td>
-                <input type="file" @change="handleFileChange"  ref="fileInput"  style="display: none;">
-                <td v-if="alter_title=='修改货物'"><img :src="imageUrlUrl" class="detailimag" style="margin-left: 20px;" @click="handleFileChange2"></td>
-                <td v-if="alter_title=='增加货物'"><span style="padding: 20px; color:rgb(51.2, 126.4, 204) " @click="triggerFileInput">{{putimg}}</span></td>
-            </tr>
-    </table>
-        <div class="btns"><button @click="addItem">提交</button>
-         <button @click="cancel">取消</button></div>
-    </div>
-    <div class="alter" :style="{display:displayed2}" style="height: 650px;position:fixed;">
-        <div class="alter_title" style="padding: 15px;">查看详情</div>
-        <table>
-            <tr>
-                <td>名称：</td>
-                <td>{{name}}</td>
-            </tr>
-            <tr>
-                <td>商品类型：</td>
-                <td>{{type}}</td>
-            </tr>
-            <tr>
-                <td>价格：</td>
-                <td>{{price}}</td>
-            </tr>
-            <tr>
-                <td>货币类型：</td>
-                <td>{{currencyType}}</td>
-            </tr>
-            <tr>
-                <td>限额：</td>
-                <td>{{limitNum}}</td>
-            </tr>
-            <tr>
-                <td>限制类型：</td>
-                <td>{{limitType}}</td>
-            </tr>
-            <tr>
-                <td>库存：</td>
-                <td>{{amount}}</td>
-            </tr>
-            <tr>
-                <td>介绍：</td>
-                <td class="over">{{intro}}</td>
-            </tr>
-            <tr>
-                <td>图片：</td>
-                <img :src="imageUrlUrl" class="detailimag">
-            </tr>
-    </table>
-        <div class="btns">
-         <button @click="defines">确定</button></div>
-    </div>
+    </el-form-item>
+  </el-form>
+  </el-dialog>
+  <!-- 查看详情 -->
+   <el-dialog v-model="centerDialogVisibledetail" title="查看商品详情" width="850" center align-center>
+      <el-descriptions title=" " border>
+    <el-descriptions-item
+      :rowspan="2"
+      :width="100"
+      label="商品图片"
+    >
+      <el-image
+        style="width: 150px; height: 80px"
+        :src="imageUrlUrl"
+      />
+    </el-descriptions-item>
+    <el-descriptions-item label="名称" :width="100">{{name}}</el-descriptions-item>
+    <el-descriptions-item label="商品类型" :width="100">{{type}}</el-descriptions-item>
+    <el-descriptions-item label="价格" :width="100">{{price}}</el-descriptions-item>
+     <el-descriptions-item label="货币类型" :width="100">{{currencyType}}</el-descriptions-item>
+    <el-descriptions-item label="限额" :width="100">{{limitNum}}</el-descriptions-item>
+    <el-descriptions-item label="库存" :width="100">
+      {{amount}}
+    </el-descriptions-item>
+    <el-descriptions-item label="限制类型" :width="100">{{limitType}}</el-descriptions-item>
+    <el-descriptions-item label="介绍" :width="100">
+    {{intro}}
+    </el-descriptions-item>
+  </el-descriptions>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="centerDialogVisibledetail = false" style="padding: 15px;">取消</el-button>
+        <el-button type="primary" @click="centerDialogVisibledetail = false" style="padding: 15px;">
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </main>
 </template>
 
 <script setup lang="ts">
 // import OSS from 'ali-oss';
 import Nav from '@/components/ManagerNav/index.vue'
-import {reactive,ref} from 'vue';
+import {reactive,ref,computed} from 'vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
 import {ElMessage} from 'element-plus';
-// 使用 ref 创建每个字段的响应式引用
+import type { ComponentSize, FormInstance, FormRules,UploadInstance  } from 'element-plus'
+import { fa } from 'element-plus/es/locale';
 const name = ref('(*^▽^*)');
-const price = ref(0);
+const price = ref(10);
 const currencyType = ref('1');
 const type = ref('日常');
-const status = ref('1');
+const status = ref('0');
 const barcode = ref('1 ');
 const intro = ref('你好');
 const limitNum = ref(10);
@@ -187,7 +201,152 @@ const campus=ref('')
 const displayed=ref('none')
 const displayed2=ref('none')
 const pagetotal=ref(0)
+const addItems=ref(false)
 const alter_title=ref('增加货物')
+const formRef = ref(null);
+const addRecords = ref(false);
+const loadtitle=ref('上传图片')
+const loadflag=ref(true)
+const centerDialogVisibledetail=ref(false)
+// 进货记录
+const form1 = reactive({
+  name: '',
+  amount2: ''
+});
+const formLabelWidth = '100px';
+
+const rules1 = {
+  amount2: [
+    { required: true, message: '请输入进货数量', trigger: 'blur' }
+  ]
+};
+
+const submitForm1 = () => {
+  if (formRef.value) {
+    formRef.value.validate((valid) => {
+      if (valid) {
+        // 表单验证通过，执行添加记录的逻辑
+        addRecord(indexx);
+      } else {
+        console.log('表单验证失败');
+        return false;
+      }
+    });
+  } else {
+    console.log('formRef is null');
+  }
+};
+
+
+interface RuleForm {
+  name: string
+  price: number
+  currencyType:string[]
+  limitNum: number
+  limitType: string[]
+  amount: number
+  status: string[]
+  intro: string
+  imageUrl: string
+  type:string
+}
+const formSize = ref<ComponentSize>('default')
+const ruleFormRef = ref<FormInstance>()
+const ruleForm = reactive<RuleForm>({
+  name: name.value,
+  currencyType: [],
+  price: price.value,
+  limitNum: limitNum.value,
+  limitType: [],
+  amount: amount.value,
+  status: [],
+  intro: intro.value,
+  imageUrl: imageUrl.value,
+  type:type.value
+})
+const currencyTypeoption=['日用币','服装币']
+const statusoption = ['下架', '上架中']
+
+const rules = reactive<FormRules<RuleForm>>({
+  name: [
+    { required: true, message: '请输入商品名称', trigger: 'blur' },
+  ],
+  currencyType: [
+    {
+      required: true,
+      message: '请选择货币类型',
+      trigger: 'change',
+    },
+  ],
+  price: [
+    {
+      required: true,
+      message: '请输入商品价格',
+      trigger: 'blur',
+    },
+  ],
+  limitNum: [
+    {
+      required: true,
+      message: '请输入限额',
+      trigger: 'blur',
+    },
+  ],
+  limitType: [
+    {
+      required: true,
+      message: '请选择限制类型',
+      trigger: 'change',
+    },
+  ],
+  amount: [
+    {
+      required: true,
+      message: '请输入库存',
+      trigger: 'blur',
+    },
+  ],
+  status: [
+    {
+      required: true,
+      message: '请选择状态',
+      trigger: 'change',
+    },
+  ],
+  type: [
+    { required: true, message: '请选择商品类型', trigger: 'change' },
+  ],
+  intro: [
+    { required: true, message: '请输入商品介绍', trigger: 'blur' },
+  ],
+})
+
+const submitForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+        addItem()
+        cancel()
+    } else {
+      console.log('error submit!', fields)
+    }
+  })
+}
+
+const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  cancel()
+}
+
+const options = Array.from({ length: 10000 }).map((_, idx) => ({
+  value: `${idx + 1}`,
+  label: `${idx + 1}`,
+}))
+// 使用 ref 创建每个字段的响应式引用
+const itemsTableRef = ref(null);
+const checkAll = ref(false); // 全选状态
+const multipleSelection = ref([]); // 当前选中的行
+
 // 一个货物
 interface Item {
   id: string;
@@ -210,7 +369,7 @@ const fetchGoods = async (current) => {
     axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.get('http://106.54.24.243:8080/market/goods/list',{
         params:{
-            pageSize:6,
+            pageSize:5,
             pageNum:current
         }
     }) 
@@ -225,7 +384,7 @@ const fetchGoods = async (current) => {
         }
     }    
   } catch (error) {
-    console.error('请求商品数据失败:', error);
+    // console.error('请求商品数据失败:', error);
   }
 };
 
@@ -237,50 +396,55 @@ onMounted(()=>{
 //发送增加的请求
 const putimg=ref('点击提交图片')
 const addAll=()=>{
-    displayed.value='block'
-    alter_title.value='增加货物' 
-    name.value=""
-    price.value=0
-    currencyType.value='1'
-    limitNum.value=10
-    limitType.value='每月'
-    intro.value=''
-    quantifier.value=''
-    putimg.value='点击提交图片'
+    loadflag.value=true
+    addItems.value=true
+    ruleForm.name=''
+    ruleForm.price=1
+    ruleForm.type=''
+    ruleForm.currencyType=[]
+    ruleForm.status=[]
+    ruleForm.limitNum=10
+    ruleForm.limitType=[]
+    ruleForm.amount=0
+    ruleForm.intro=''
+    ruleForm.imageUrl=''
+    alter_title.value='增加货物'
 }
 const addItem=()=>{
-    if(alter_title.value==='增加货物'){
-        addGoods()
-        fetchGoods(currentPage.value)
-        displayed.value='none'
-    }
-    if(alter_title.value==='修改货物'){
-    modifyGoods(indexx.value)
-    }
+        if(alter_title.value==='增加货物'){
+            addGoods()
+            fetchGoods(currentPage.value)
+        }
+        else{
+            console.log(1111);
+            
+            modifyGoods(indexx.value)
+            fetchGoods(currentPage.value)
+        }
 }
 const cancel=()=>{
-    displayed.value='none'
+    addItems.value=false
 }
 const addGoods = async () => {
-    limitType.value=limitType.value=='每月'?'0':'1'
-    currencyType.value=currencyType.value=='日常币'?'1':'0'
+    console.log(ruleForm.status);
+    status.value=ruleForm.status[0]==='上架中'?'0':'1';
     try {
     const authToken=localStorage.getItem('token')
     const clientId=localStorage.getItem('client_id')
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
     const requestData = {
-        name: name.value,
-        price: price.value,
-        currencyType: currencyType.value,
-        type: type.value,
+        name: ruleForm.name,
+        price: ruleForm.price,
+        currencyType: ruleForm.currencyType,
+        type: ruleForm.type,
         status: status.value,
         barcode: barcode.value,
-        intro: intro.value,
-        limitNum: limitNum.value,
-        limitType: limitType.value,
+        intro: ruleForm.intro,
+        limitNum: ruleForm.limitNum,
+        limitType: ruleForm.limitType,
         quantifier: quantifier.value,
-        imageUrl:imageUrl.value,
+        imageUrl:ruleForm.imageUrl,
         };
         const response = await axios.post(`http://106.54.24.243:8080/market/goods`,requestData) 
         fetchGoods(currentPage.value)
@@ -294,35 +458,28 @@ const addGoods = async () => {
 }
 };
 
-// 单全选逻辑
-// 更新全选状态
-const checkall=ref(false)
-const updateCheckAll = () => {
-    checkall.value=items.value.every(item => item.checked)
-};
-// 切换全选
-const toggleCheckAll = () => {
-    checkall.value=!checkall.value
-    items.value.forEach(item => {
-    item.checked = checkall.value;
+let idArr=ref([])
+const selected=(data)=>{
+    idArr.value=[]
+    data.forEach((value)=>{
+        idArr.value.push(value.id)
     })
 }
 
 // 删除功能
 // 删除指定项
 const deleteItem = (index: number) => {
-    console.log(items.value[index].id)
     delectGoods(items.value[index].id)
 fetchGoods(currentPage.value)
 };
 // 删除请求
-const delectGoods = async (id) => {
+const delectGoods = async (idArr) => {
     try {
     const authToken=localStorage.getItem('token')
     const clientId=localStorage.getItem('client_id')
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.delete(`http://106.54.24.243:8080/market/goods/${id}`) // 请求商品数据
+    const response = await axios.delete(`http://106.54.24.243:8080/market/goods/${idArr}`) // 请求商品数据
     fetchGoods(currentPage.value)
     ElMessage.success('删除成功')
     } catch (error) {
@@ -331,13 +488,9 @@ const delectGoods = async (id) => {
 }   
 };
 // 删除全部
-const deleteALl=()=>{
-    for (let i = 0; i < items.value.length; i++){
-        if(items.value[i].checked===true){
-            delectGoods(items.value[i].id)
-        }
-    }
-    checkall.value=false
+const deleteALl=()=>{    
+    delectGoods(idArr.value)
+    checkAll.value=false
 }
 
 
@@ -346,7 +499,7 @@ const deleteALl=()=>{
 const selectedFile = ref(null);
 const fileInput = ref(null);
 // 上传文件
-const handleFileChange = (event) => {
+const handleFileChange = (event) => {  
   const formData = new FormData();
   const imageFile = event.target.files[0];
   if (imageFile) {
@@ -361,10 +514,11 @@ const addFile = async (formData) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
         axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.post('http://106.54.24.243:8080/resource/oss/upload', formData);
-    imageUrl.value=response.data.data.ossId
-    putimg.value='提交图片成功'
-    getimag(imageUrl.value)
+    ruleForm.imageUrl=response.data.data.ossId
+    getimag(ruleForm.imageUrl)
     ElMessage.success('上传成功')
+    loadtitle.value='上传成功'
+    loadflag.value=false
   } catch (error) {
     ElMessage.error('上传失败')
   }
@@ -377,6 +531,8 @@ const getimag=async (ossIds)=>{
     axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.get(`http://106.54.24.243:8080/resource/oss/listByIds/${ossIds}`)
     imageUrlUrl.value=response.data.data[0].url
+    console.log(response.data.data[0].url);
+    
 }
 // 上传图片的两个点击事件
 const handleFileChange2=(event)=>{
@@ -387,10 +543,8 @@ const triggerFileInput = () => {
 };
 // 修改商品的接口和库存的接口
 const modifyGoods = async (indexx) => {
-console.log(indexx);
-if(currencyType.value==='日常币')
-    currencyType.value='1'
-else currencyType.value='0'
+    console.log(111);
+    ruleForm.status=ruleForm.status==='上架中'?'0':'1'
 try {
 const authToken=localStorage.getItem('token')
 const clientId=localStorage.getItem('client_id')
@@ -398,17 +552,18 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
 axios.defaults.headers.common['clientId'] = clientId;
     let requestData = {
     id:items.value[indexx].id,
-    name: name.value,
-    price: price.value,
-    currencyType: currencyType.value,
-    type: type.value,
-    status: status.value,
+    name: ruleForm.name,
+    price: ruleForm.price,
+    currencyType: ruleForm.currencyType,
+    type: ruleForm.type,
+    status: ruleForm.status,
     barcode: barcode.value,
-    intro: intro.value,
-    limitNum: limitNum.value,
-    limitType: limitType.value,
+    intro: ruleForm.intro,
+    limitNum: ruleForm.limitNum,
+    limitType: ruleForm.limitType,
     quantifier: quantifier.value,
-    imageUrl: imageUrl.value,
+    imageUrl: ruleForm.imageUrl,
+    amount:ruleForm.amount
     };
     const response = await axios.put(`http://106.54.24.243:8080/market/goods`,requestData)
     if(response.data.code===200) 
@@ -419,39 +574,19 @@ axios.defaults.headers.common['clientId'] = clientId;
     console.error('请求商品数据失败:', error);
     ElMessage.error('修改失败')
     }
-try {
-    const authToken=localStorage.getItem('token')
-    const clientId=localStorage.getItem('client_id')
-    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-    axios.defaults.headers.common['clientId'] = clientId;
-        const response = await axios.put(`http://106.54.24.243:8080/market/warehouse`,{
-            amount:amount.value,
-            goodsId:items.value[indexx].id
-        }) 
-    fetchGoods(currentPage.value)
-    if(response.data.code===200) 
-        ElMessage.success('修改库存成功')
-    else
-        ElMessage.error('修改库存失败')
-    } catch (error) {
-        console.error('请求商品数据失败:', error);
-        ElMessage.error('修改库存失败')
-}
-// 修改货物的弹窗
-displayed.value='none'
 };
 const indexx=ref(0)
 const modifyItem = (index: number) => {
     indexx.value=index
-    displayed.value="block"
     alter_title.value="修改货物"
+    addItems.value=true
     datailGoods(items.value[index].id,index)
 };
 
 
 // 查看详情功能
 const detail=(index:number)=>{
-    displayed2.value="block"
+    centerDialogVisibledetail.value=true
     datailGoods(items.value[index].id,index)
 }
 const datailGoods = async (id,index) => {
@@ -461,23 +596,23 @@ const datailGoods = async (id,index) => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.get(`http://106.54.24.243:8080/market/goods/${id}`)
-    name.value=response.data.data.name
-    price.value=response.data.data.price
-    currencyType.value=response.data.data.currencyType
+    ruleForm.name=response.data.data.name
+    ruleForm.price=response.data.data.price
+    ruleForm.currencyType=response.data.data.currencyType
     if(currencyType.value=='1') currencyType.value='日常币'
     else currencyType.value='服装币'
-    type.value=response.data.data.type
-    status.value=response.data.data.status
+    ruleForm.type=response.data.data.type
+    ruleForm.status=response.data.data.status==='0'?'上架中':'下架'
     barcode.value=response.data.data.barcode
-    intro.value=response.data.data.intro
-    limitNum.value=response.data.data.limitNum
-    limitType.value=response.data.data.limitType=='1'?'每月':"每学期"
+    ruleForm.intro=response.data.data.intro
+    ruleForm.limitNum=response.data.data.limitNum
+    ruleForm.limitType=response.data.data.limitType
     quantifier.value=response.data.data.quantifier
-    imageUrl.value=response.data.data.imageUrl
+    ruleForm.imageUrl=response.data.data.imageUrl
     campus.value=response.data.data.campus
     imageUrlUrl.value=response.data.data.imageUrlUrl
-    imageUrl.value=response.data.data.imageUrl
-    amount.value=response.data.data.amount
+    ruleForm.imageUrl=response.data.data.imageUrl
+    ruleForm.amount=response.data.data.amount
   } catch (error) {
     console.error('请求商品数据失败:', error);
     ElMessage.error('查看商品失败')
@@ -494,7 +629,7 @@ const currentPage=ref(1)
 const handlePageChange = (newPage) => {
  currentPage.value = newPage;
  fetchGoods(currentPage.value)
- checkall.value=false
+ checkAll.value=false
 };
 
 
@@ -504,15 +639,16 @@ const goodsId = ref('1');
 const amount2 = ref(10);
 const displayed3=ref('none')
 const addGoodsRecord=(index)=>{
-    displayed3.value='block'    
+    addRecords.value=true
     name.value=items.value[index].name
     goodsId.value=items.value[index].id    
     // console.log(items.value[index].id);
 }
 const cancel2=()=>{
-    displayed3.value='none'
+    addRecords.value=false
 }
 const addRecord = async (index) => {
+    addRecords.value = false;
     try {
     const authToken=localStorage.getItem('token')
     const clientId=localStorage.getItem('client_id')
@@ -520,7 +656,7 @@ const addRecord = async (index) => {
     axios.defaults.headers.common['clientId'] = clientId;
     const requestData = {
         goodsId:goodsId.value,
-        amount:amount2.value
+        amount:form1.amount2
         };
         const response = await axios.post(`http://106.54.24.243:8080/market/restock`,requestData)
         if(response.data.code===200) 
@@ -539,6 +675,19 @@ fetchGoods(currentPage.value)
 </script>
 
 <style scoped>
+.custom-form-item {
+  margin-left: 30px;
+  margin-bottom:25px; /* 调整这个值以改变间距 */
+  font-size: 18px;
+  width: 400px;
+}
+.elbutns{
+    padding: 10px;
+}
+.btn{
+    width: 500px;
+    float: left;
+}
 .over{
 width: 100%;
 display: -webkit-box;
@@ -559,68 +708,6 @@ text-overflow: ellipsis;
     vertical-align: text-top;
     border-radius: 20px;
 }
-.alter{
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -330px;
-    margin-left: -300px;
-   width: 600px;
-   height: 660px;
-   border: gray 2px solid;
-   border-radius: 20px;
-   box-shadow: rgba(0,0,0,.3) 4px 4px 4px;
-   backdrop-filter: blur(40px); 
-   font-size: 20px;
-   line-height: 35px;
-   font-weight: 700;
-}
-.alter .alter_title{
-    font-size: 30px;
-    color: rgb(51.2, 126.4, 204);
-    font-weight: 700;
-    padding: 15px;
-    text-align: center;
-}
-.alter table{
-    padding: 0 80px;
-    line-height: 45px;
-
-}
-.alter table td{
-    width: 150px;
-}
-
-.alter table input{
-    margin-left: 20px;
-    margin-bottom: 10px;
-    width: 300px;
-    height: 35px;
-    /* 取消选中时的外边框 */
-    outline: none;
-}
-.alter button{
-    display: inline-block;
-    width: 80px;
-    height: 40px;
-    font-size: 16px;
-    background-color: #3C79B4;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 2px 2px 2px #014F9C;
-    color: #EEF7FC;
-    font-size: 20px;
-    margin: 20px;
-}
-.btns{
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    position: absolute;
-    bottom: 30px;
-    width: 600px;
-}
 
 /*分页器*/
 .bottom{
@@ -628,8 +715,7 @@ text-overflow: ellipsis;
     width: 280px;
     height: 30px;
     bottom: 25px;
-    left: 50%;
-    margin-left: -140px;
+    right: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -663,6 +749,7 @@ h2 {
 }
 main .form {
     height: 1600px;
+    width: 1300px;
     position: relative;
 }
 
@@ -684,7 +771,7 @@ main .form .form_main .tr img {
 main .form {
     border-radius: 10px;
     width: 1200px;
-    height: 810px;
+    height: 850px;
     margin: auto;
     background-color: #fff;
     position: relative;
@@ -710,99 +797,10 @@ main .form .form_top span {
     line-height: 100px;
 }
 
-main .form .form_top input {
-    width: 120px;
-    height: 45px;
-    margin: auto 20px;
-    border: #fff 1px solid;
-    background-color:rgb(51.2, 126.4, 204) ;
-    color: #fff;
-    font-size: 17px;
-    border-radius: 10px;
-}
+
 
 main .form .form_main {
     margin: 0 20px;
-}
-main .form .form_main .tr {
-    width: 1060px;
-    height: 40px;
-    text-align: center;
-    line-height: 40px;
-}
-
-main .form .form_main .tr td {
-    width: 215px;
-    height: 90px;
-    cursor: default;
-}
-main .form .form_main .tr:first-child td{
-  height: 60px;
-}
-main .form .form_main .tr:first-child{
-    background-color:rgb(102, 151, 204);
-    font-size: 18px;
-    color: #fff;
-}
-main .form .form_main .tr:first-child td{
-  height: 40px;
-}
-main .form .form_main .tr td:first-child{
-    width: 70px;
-}
-main .form .form_main .tr img {
-    height: 60%;
-    width: 60%;
-}
-
-main .form .form_main .tr td a {
-    color: black;
-}
-
-main .form .form_main .tr td a:hover {
-    color: #daeef8;
-}
-
-main .form .form_main .tr td:first-child {
-    padding: 0;
-}
-
-main .form .form_main .tr input[type="button"] {
-    cursor: pointer;
-    border: none;
-    background-color: #fff;
-    font-size: 17px;
-    color: #519aba;
-}
-
-main .form .form_main .tr input[type="button"]:hover {
-    color: blue;
-}
-
-main .form .form_bottom {
-    height: 50px;
-    width: 130px;
-    line-height: 50px;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    margin-left: -65px;
-}
-
-main .form .form_bottom input {
-    width: 45px;
-    height: 35px;
-    border: #fff 1px solid;
-    background-color: #b77880;
-    color: #fff;
-    font-size: 17px;
-    border-radius: 10px;
-}
-
-main .form .form_bottom span {
-    display: inline-block;
-    width: 40px;
-    text-align: center;
 }
         
 </style>

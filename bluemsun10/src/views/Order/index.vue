@@ -4,98 +4,97 @@
     <div class="form">
       <div class="form_top">
         <h2>订单列表</h2>
-        <span>
-          <input type="button" value="核销" id="add" @click="deleteSelectedOrders" />
+        <div class="classes">
+          <div class="flex flex-wrap items-center">
+    <el-dropdown>
+      <el-button type="primary" style="padding: 19px; margin-top:32px">
+        {{classestitle}}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+      </el-button>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item @click="orderstatus=null;classestitle='全部'">全部</el-dropdown-item>
+          <el-dropdown-item @click="orderstatus=0;classestitle='待处理'">待处理</el-dropdown-item>
+          <el-dropdown-item @click="orderstatus=1;classestitle='失败'">失败</el-dropdown-item>
+          <el-dropdown-item @click="orderstatus=2;classestitle='成功'">成功</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+    <span style="margin: 0 20px;">
+          <el-popconfirm title="确定删除？" @confirm="delectOrders">
+                <template #reference>
+                <el-button type="primary" size="large"  style="padding: 10px;" :disabled="orderstatus!==0">批量核销</el-button>
+                </template>
+            </el-popconfirm>
         </span>
+  </div>
+        </div>
+        
       </div>
       <div class="form_main">
-        <form action="#">
-          <table>
-            <tr class="tr">
-              <td><input type="checkbox" id="checkall" @click="toggleCheckAll" v-model="checkall" /></td>
-              <td>订单时间</td>
-              <td>订单状态</td>
-              <td>用户名称</td>
-              <td>订单总价</td>
-              <td>操作</td>
-            </tr>
-            <tr class="tr" v-for="(order, index) in orders" :key="order.id">
-              <td>
-                <input type="checkbox" class="ck" v-model="order.checked" @change="updateCheckAll" />
-              </td>
-              <td class="createTime">{{ order.createTime }}</td>
-              <td class="status">{{ order.status }}</td>
-              <td class="username">{{ order.username }}</td>
-              <td class="userId">服装币:{{order.clothingBalance}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日常币:{{order.generalBalance}}</td>
-              <td>
-                <input 
-                  type="button" 
-                  value="核销" 
-                  class="delete" 
-                  v-if="order.status === '未知'" 
-                  @click="deleteOrder(index)" 
-                />
-                <input type="button" value="查看详情" class="delete" @click="detail(index)" />
-              </td>
-            </tr>
-          </table>
-        </form>
+        <el-table :data="orders" @selection-change="selected" border style="width: 1280px; margin:3px 0;">
+            <el-table-column type="selection" width="50"/>
+            <el-table-column prop="createTime" label="订单时间" width="255"/>
+            <el-table-column prop="status" label="订单状态" width="220"/>
+            <el-table-column prop="username" label="用户名称" width="220"/>
+            <el-table-column prop="clothingBalance" label="订单总价" width="213"/>
+
+            <el-table-column label="操作" width="300" >
+            <template #default="scope">
+            <el-popconfirm v-if="orderstatus==='0'" title="确定核销？" @confirm="delectOrders(scope.$index)">
+                <template #reference>
+                <el-button text type="primary" class="table-btn ml10">
+                        核销订单
+                </el-button>
+                </template>
+            </el-popconfirm>
+            <el-button text type="primary" class="table-btn ml10" @click="detail(scope.$index)">
+                        查看详情
+            </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
       </div>
       <div class="bottom">
-        <el-pagination layout="prev, pager, next" :total="orderTotal" v-model="currentPage" :page-size="11"
-          @current-change="handlePageChange" size="large" id="pagenation"/>
+        <el-pagination layout="prev,pager,next,jumper,total" :page-size="11" :total="orderTotal" v-model="currentPage"  @current-change="handlePageChange"/>
       </div>
     </div>
-    <div class="alter" :style="{display:displayed2}" style="height: 630px; margin-top:-300px;position:fixed;">
-      <div class="alter_title">查看详情</div>
-      <table>
-        <tr>
-          <td>名称：</td>
-          <td>{{goodsName}}</td>
-        </tr>
-        <tr>
-          <td>价格：</td>
-          <td>{{price}}</td>
-        </tr>
-        <tr>
-          <td>货币类型：</td>
-          <td>{{currencyType}}</td>
-        </tr>
-        <tr>
-          <td>数量：</td>
-          <td>{{amount}}</td>
-        </tr>
-        <tr>
-          <td>订单号：</td>
-          <td>{{orderId}}</td>
-        </tr>
-        <tr>
-          <td>货物编号：</td>
-          <td>{{goodsId}}</td>
-        </tr>
-        <tr>
-          <td>图片：</td>
-          <td><img :src="imageUrl" class="detailimag"></td>
-        </tr>
-      </table>
-      <div class="bottom" style="bottom: 10px;">
-        <el-pagination layout="prev, pager, next" :total="detailTotal" v-model="currentPage2"  :page-size="1"
+    <!-- 查看详情弹窗 -->
+     <el-dialog v-model="centerDialogVisible" title="查看详情" width="840" center >
+        <el-descriptions title="" border>
+    <el-descriptions-item
+      :rowspan="2"
+      :width="140"
+      label="商品图片"
+      align="center"
+    >
+      <el-image
+        style="width: 100px; height: 100px"
+        :src="imageUrl"
+      />
+    </el-descriptions-item>
+    <el-descriptions-item label="名称">{{goodsName}}</el-descriptions-item>
+    <el-descriptions-item label="价格">{{price}}</el-descriptions-item>
+    <el-descriptions-item label="货币类型">{{currencyType}}</el-descriptions-item>
+    <el-descriptions-item label="数量">{{amount}}
+    </el-descriptions-item>
+    <el-descriptions-item label="商品介绍">
+      {{intro}}
+    </el-descriptions-item>
+  </el-descriptions>
+  <el-pagination layout="prev, pager, next" :total="detailTotal" v-model="currentPage2"  :page-size="1"
           @current-change="handlePageChange2" id="pagenation"/>
-      </div>
-      <div class="btns" style="margin-top: 15px;">
-        <button @click="defines">确定</button>
-      </div>
-    </div>
+  </el-dialog>
   </main>
 </template>
 
 <script setup lang="ts">
 import Nav from '@/components/ManagerNav/index.vue'
-import { reactive, ref } from 'vue';
+import { reactive, ref,watch } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { fa } from 'element-plus/es/locale';
+import { ArrowDown, Orange } from '@element-plus/icons-vue'
 interface Order {
   id: string;
   status: string;
@@ -120,11 +119,21 @@ const currentPage2 = ref(1);
 const orderTotal = ref(0); 
 const detailTotal=ref(0)
 const checkall = ref(false);
+const centerDialogVisible = ref(false)
+const orderstatus=ref(null)
+const classestitle=ref('订单分类')
+const intro=ref('')
 let orderID;
-
+let idArr=[]
+const selected=(data)=>{
+    idArr=[]
+    data.forEach((value)=>{
+        idArr.push[value.id]
+    })
+}
 // 查看详情
-const detail = (index: number) => {
-  displayed2.value = "block";
+const detail = (index: number) => { 
+  centerDialogVisible.value = true
   orderID = orders.value[index].id;
   datailOrder(orderID, currentPage2.value);
 };
@@ -149,6 +158,7 @@ const datailOrder = async (id, current) => {
     orderId.value = response.data.rows[0].orderId;
     goodsId.value = response.data.rows[0].goodsId;
     imageUrl.value = response.data.rows[0].imageUrl;
+    intro.value=response.data.rows[0].intro
   } catch (error) {
     console.error('请求商品数据失败:', error);
   }
@@ -158,6 +168,9 @@ const defines = () => {
 };
 
 // 获取列表渲染
+watch(orderstatus, (newValue, oldValue) => {
+  fetchOrder(currentPage)
+});
 const fetchOrder = async (current) => {
   try {
     const authToken = localStorage.getItem('token');
@@ -167,7 +180,8 @@ const fetchOrder = async (current) => {
     const response = await axios.get('http://106.54.24.243:8080/market/order/adminlist', {
       params: {
         pageSize: 11,
-        pageNum: current
+        pageNum: current,
+        status:orderstatus.value
       }
     });
     orders.value = response.data.rows; 
@@ -178,7 +192,7 @@ const fetchOrder = async (current) => {
       } else if (order.status === '1') {
         orders.value[i].status = '失败';
       } else if (order.status === '0') {
-        orders.value[i].status = '未知';
+        orders.value[i].status = '待处理';
       }
     });
   } catch (error) {
@@ -190,65 +204,23 @@ onMounted(() => {
   fetchOrder(currentPage.value);
 });
 
-// 单全选逻辑
-const updateCheckAll = () => {
-  checkall.value = orders.value.every(order => order.checked);
-};
-const toggleCheckAll = () => {
-  checkall.value = !checkall.value;
-  orders.value.forEach(order => {
-    order.checked = checkall.value;
-  });
-};
-
 
 // 核销商品
-let flag=true
-const delectOrders = async (id) => {
+const delectOrders = async (idArr) => {
   try {
     const authToken = localStorage.getItem('token');
     const clientId = localStorage.getItem('client_id');
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
-    const res=await axios.post(`http://106.54.24.243:8080/market/order/check/${id}`);
-    if(res.data.code===500){
-      flag=false
+    const res=await axios.post(`http://106.54.24.243:8080/market/order/check/${idArr}`);
+    if(res.data.code===200){
+      ElMessage.success('核销成功')
+    }
+    else{
+      ElMessage.error('核销失败')
     }
   }catch (error) {
     console.error('请求商品数据失败:', error);
-  }
-};
-
-const deleteOrder = async (index: number) => {
-  if (orders.value[index].status === '未知') {  // 只有状态为"未知"时才允许删除
-    try {
-      await delectOrders(orders.value[index].id);
-      ElMessage.success('核销成功');
-      // 删除操作完成后刷新数据
-      fetchOrder(currentPage.value);
-    } catch (error) {
-      ElMessage.error('核销失败');
-    }
-  }  
-};
-const deleteSelectedOrders = async () => {
-  const selectedOrders = orders.value.filter(order => order.checked);
-  if (selectedOrders.length > 0) {
-    try {
-      // 批量删除选中的订单
-      await Promise.all(selectedOrders.map(order => delectOrders(order.id)));
-      // 删除操作完成后刷新数据
-      if(flag===true) 
-        ElMessage.success('核销成功')
-      else
-        ElMessage.error('核销失败')
-      fetchOrder(currentPage.value);
-      checkall.value=false
-    } catch (error) {
-      ElMessage.error('核销失败');
-    }
-  } else {
-    ElMessage.warning('请选择订单进行核销');
   }
 };
 
@@ -265,17 +237,35 @@ const handlePageChange2 = (newPage) => {
 </script>
 
 <style scoped>
+.classes{
+  float: right;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.example-showcase .el-dropdown + .el-dropdown {
+  margin-left: 15px;
+}
+.example-showcase .el-dropdown-link {
+  cursor: pointer;
+  color: var(--el-color-primary);
+  display: flex;
+  align-items: center;
+}
 /*分页器*/
 .bottom{
     position: absolute;
     width: 280px;
     height: 30px;
     bottom: 25px;
-    left: 50%;
-    margin-left: -140px;
+   right: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#pagenation{
+    margin-bottom: 0px;
 }
 .detailimag{
     width: 200px;
@@ -283,63 +273,7 @@ const handlePageChange2 = (newPage) => {
     vertical-align: text-top;
     border-radius: 20px;
 }
-.alter{
-    display: none;
-position: absolute;
-top: 50%;
-left: 50%;
-margin-top: -150px;
-margin-left: -300px;
-   width: 600px;
-   height: 300px;
-   border: gray 2px solid;
-   border-radius: 20px;
-   box-shadow: rgba(0,0,0,.3) 4px 4px 4px;
-   backdrop-filter: blur(40px); 
-   font-size: 20px;
-   line-height: 35px;
-   font-weight: 700;
-}
-.alter .alter_title{
-    font-size: 30px;
-    color: rgb(51.2, 126.4, 204);
-    font-weight: 700;
-    padding: 25px;
-    text-align: center;
-}
-.alter table{
-    padding: 0 85px;
-    line-height: 45px;
-}
-.alter table td{
-    width: 120px;
-}
-.alter table input{
-    margin-left: 20px;
-    margin-bottom: 10px;
-    width: 300px;
-    height: 35px;
-    /* 取消选中时的外边框 */
-    outline: none;
-}
-.alter button{
-    display: inline-block;
-    width: 80px;
-    height: 40px;
-    font-size: 16px;
-    background-color: #3C79B4;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 2px 2px 2px #014F9C;
-    color: #EEF7FC;
-    font-size: 20px;
-    margin: 20px;
-}
-.btns{
-    display: flex;
-    justify-content: center;
-    align-content: center;
-}
+
 * {
     padding: 0;
     margin: 0;
@@ -373,7 +307,7 @@ h2 {
     margin: 0 auto;
 }
 main .form {
-    height: 1600px;
+    height: 800px;
 }
 
 main .form .form_main table tr input[type="button"] {
@@ -393,8 +327,8 @@ main .form .form_main .tr img {
 
 main .form {
     border-radius: 10px;
-    width: 1200px;
-    height: 1200px;
+    width: 1300px;
+    height: 830px;
     margin: auto;
     background-color: #fff;
     position: relative;
@@ -420,98 +354,10 @@ main .form .form_top span {
     line-height: 100px;
 }
 
-main .form .form_top input {
-    width: 120px;
-    height: 45px;
-    margin: auto 20px;
-    border: #fff 1px solid;
-    background-color:rgb(51.2, 126.4, 204) ;
-    color: #fff;
-    font-size: 17px;
-    border-radius: 10px;
-    cursor: pointer;
-}
 
 main .form .form_main {
     margin: 0 20px;
 }
 
-main .form .form_main .tr {
-    width: 1060px;
-    height: 60px;
-    text-align: center;
-    line-height: 40px;
-}
 
-main .form .form_main .tr:first-child{
-    background-color:rgb(102, 151, 204);
-    font-size: 18px;
-    color: #fff;
-}
-main .form .form_main .tr td:first-child{
-  width: 20px;
-}
-main .form .form_main .tr td {
-    cursor: default;
-    width: 220px;
-    height: 85px;
-}
-main .form .form_main .tr:first-child td{
-  height: 60px;
-}
-
-main .form .form_main .tr img {
-    width: 70%;
-    height: 60%;
-}
-
-main .form .form_main .tr td a {
-    color: black;
-}
-
-main .form .form_main .tr td a:hover {
-    color: #daeef8;
-}
-
-main .form .form_main .tr td:first-child {
-    padding: 0;
-}
-
-main .form .form_main .tr input[type="button"] {
-    cursor: pointer;
-    border: none;
-    background-color: #fff;
-    font-size: 17px;
-    color: #519aba;
-}
-
-main .form .form_main .tr input[type="button"]:hover {
-    color: blue;
-}
-
-main .form .form_bottom {
-    height: 50px;
-    width: 130px;
-    line-height: 50px;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    margin-left: -65px;
-}
-
-main .form .form_bottom input {
-    width: 45px;
-    height: 35px;
-    border: #fff 1px solid;
-    background-color: #b77880;
-    color: #fff;
-    font-size: 17px;
-    border-radius: 10px;
-}
-
-main .form .form_bottom span {
-    display: inline-block;
-    width: 40px;
-    text-align: center;
-}
 </style>

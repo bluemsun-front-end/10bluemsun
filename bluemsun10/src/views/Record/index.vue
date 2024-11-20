@@ -10,73 +10,61 @@
                 </span>
                 </div>
             </div>
-            <div class="form_main">
-                <form action="#">
-                    <table>
-                        <tr class="tr">
-                            <!-- <td>进货编号</td> -->
-                            <td>货物名称</td>
-                            <td>货物图片</td>
-                            <td>进货增加</td>
-                            <td>货物库存</td>
-                            <td>操作</td>
-                        </tr>
-                        <tr class="tr" v-for="(item,index) in items" :key="item.id">
-                            <!-- <td class="id">{{ item.id }}</td> -->
-                            <td class="name">{{ item.name }}</td>
-                            <td><img :src="item.imageUrl" alt=""></td>
-                            <td>{{item.endAmount-item.originAmount}}</td>
-                            <td class="amount">{{ item.endAmount }}</td>
-                            <td>
-                                <input type="button" value="查看详情"  @click="detail(index)" />
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+            <div class="form_main" style="font-size: 16px;">
+            <el-table :data="items"  border style="width: 1280px;">
+            <el-table-column prop="name" label="商品名称" width="250"/>
+            <el-table-column label="商品图片" width="310" height="80">
+                <template #default="scope">
+                    <el-image style="width: 220px; height: 100px" :src="scope.row.imageUrl" />
+                    <!-- <img :src="scope.row.imageUrlUrl" alt="商品图片" /> -->
+                </template>
+            </el-table-column>
+            <el-table-column prop="originAmount" label="货物起始" width="224"/>
+            <el-table-column prop="amount" label="货物库存" width="224"/>
+            <el-table-column label="操作" width="250" >
+            <template #default="scope">
+                    <el-button text type="primary" class="table-btn ml10" @click="detail(scope.$index)">
+                        查看详情
+            </el-button>
+                </template>
+            
+            </el-table-column>
+        </el-table>
             </div>
             <div class="bottom">
-            <el-pagination layout="prev, pager, next" :total="total" v-model="currentPage" size="large"
-            :page-size="6"
-            @current-change="handlePageChange"
-            id="pagenation"/>
+                <el-pagination layout="prev,pager,next,jumper,total" :page-size="6" :total="total" v-model="currentPage" @current-change="handlePageChange"/>
         </div>
         </div>
-        
-    <div class="alter" :style="{display:displayed2}" style="height: 600px; margin-top:-300px;position:fixed;">
-        <div class="alter_title">查看详情</div>
-        <table>
-            <tr>
-                <td>名称：</td>
-                <td>{{name}}</td>
-            </tr>
-            <tr>
-                <td>起始数量：</td>
-                <td>{{originAmount}}</td>
-            </tr>
-            <tr>
-                <td>现存数量：</td>
-                <td>{{endAmount}}</td>
-            </tr>
-            <!-- <tr>
-                <td>校区：</td>
-                <td>{{campus}}</td>
-            </tr> -->
-            <tr>
-                <td>增加数量：</td>
-                <td>{{endAmount-originAmount}}</td>
-            </tr>
-            <tr>
-                <td>库存：</td>
-                <td>{{amount}}</td>
-            </tr>
-            <tr>
-                <td>图片：</td>
-                <img :src="imageUrl" class="detailimag">
-            </tr>
-    </table>
-        <div class="btns">
-         <button @click="defines">确定</button></div>
-    </div>
+
+  <el-dialog v-model="centerDialogVisible" title="进货记录详情" width="820" center>
+     <el-descriptions title="" border>
+    <el-descriptions-item
+      :rowspan="2"
+      :width="140"
+      label="商品图片"
+      align="center"
+    >
+      <el-image
+        style="width: 150px; height: 80px"
+       :src="imageUrl"
+      />
+    </el-descriptions-item>
+    <el-descriptions-item label="商品名称">{{name}}</el-descriptions-item>
+    <el-descriptions-item label="起始数量">{{originAmount}}</el-descriptions-item>
+    <el-descriptions-item label="现存数量">{{endAmount}}</el-descriptions-item>
+    <el-descriptions-item label="增加数量">
+      <el-tag size="small" style="padding: 10px;">{{endAmount-originAmount}}</el-tag>
+    </el-descriptions-item>
+  </el-descriptions>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="centerDialogVisible = false" style="padding: 15px;">取消</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false"  style="padding: 15px;">
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
     </main>
 </template>
 
@@ -102,11 +90,12 @@ const endAmount = ref(0);
 const originAmount = ref(0);
 const imageUrl=ref('')
 const displayed2=ref('none')
+const centerDialogVisible = ref(false)
 const items = ref<Item[]>([
 ]);
 // 查看详情功能
 const detail=(index:number)=>{
-    displayed2.value="block"
+    centerDialogVisible.value=true
     datailGoods(items.value[index].id,index)
 }
 const datailGoods = async (id,index) => {
@@ -116,7 +105,7 @@ const datailGoods = async (id,index) => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
     axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.get(`http://106.54.24.243:8080/market/restock/info/${id}`) 
-    console.log(response.data.data);
+    console.log(response.data);
     amount.value=response.data.data.amount
     endAmount.value=response.data.data.endAmount
     imageUrl.value=response.data.data.imageUrl
@@ -139,7 +128,7 @@ const fetchRecord = async (current) => {
     axios.defaults.headers.common['clientId'] = clientId;
     const response = await axios.get('http://106.54.24.243:8080/market/restock/list',{
         params:{
-            pageSize:6,
+            pageSize:5,
             pageNum:current
         }
   }) 
@@ -184,8 +173,7 @@ const handlePageChange = (newPage) => {
     width: 280px;
     height: 30px;
     bottom: 25px;
-    left: 50%;
-    margin-left: -140px;
+    right: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -196,63 +184,7 @@ const handlePageChange = (newPage) => {
     vertical-align: text-top;
     border-radius: 20px;
 }
-.alter{
-    display: none;
-position: absolute;
-top: 50%;
-left: 50%;
-margin-top: -150px;
-margin-left: -300px;
-   width: 600px;
-   height: 300px;
-   border: gray 2px solid;
-   border-radius: 20px;
-   box-shadow: rgba(0,0,0,.3) 4px 4px 4px;
-   backdrop-filter: blur(40px); 
-   font-size: 20px;
-   line-height: 35px;
-   font-weight: 700;
-}
-.alter .alter_title{
-    font-size: 30px;
-    color: rgb(51.2, 126.4, 204);
-    font-weight: 700;
-    padding: 25px;
-    text-align: center;
-}
-.alter table{
-    padding: 0 85px;
-    line-height: 55px;
-}
-.alter table td{
-    width: 120px;
-}
-.alter table input{
-    margin-left: 20px;
-    margin-bottom: 10px;
-    width: 300px;
-    height: 35px;
-    /* 取消选中时的外边框 */
-    outline: none;
-}
-.alter button{
-    display: inline-block;
-    width: 80px;
-    height: 40px;
-    font-size: 16px;
-    background-color: #3C79B4;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 2px 2px 2px #014F9C;
-    color: #EEF7FC;
-    font-size: 20px;
-    margin: 20px;
-}
-.btns{
-    display: flex;
-    justify-content: center;
-    align-content: center;
-}
+
 img {
     /* 除掉图片底端的空隙 */
     border: 0;
@@ -300,8 +232,8 @@ main .form .form_main .tr img {
 
 main .form {
     border-radius: 10px;
-    width: 1200px;
-    height: 810px;
+    width: 1300px;
+    height: 850px;
     margin: auto;
     background-color: #fff;
     position: relative;
@@ -342,83 +274,4 @@ main .form .form_main {
     margin: 0 20px;
 }
 
-main .form .form_main .tr {
-    width: 1060px;
-    height: 60px;
-    text-align: center;
-    line-height: 60px;
-}
-
-main .form .form_main .tr:first-child {
-    background-color: #daeef8;
-}
-
-main .form .form_main .tr td {
-    cursor: default;
-    height: 90px;
-    width: 230px;
-}
-main .form .form_main .tr:first-child{
-    background-color:rgb(102, 151, 204);
-    font-size: 18px;
-    color: #fff;
-}
-main .form .form_main .tr:first-child td{
-  height: 60px;
-}
-main .form .form_main .tr img {
-    width: 60%;
-    height: 60%;
-}
-
-main .form .form_main .tr td a {
-    color: black;
-}
-
-main .form .form_main .tr td a:hover {
-    color: #daeef8;
-}
-
-main .form .form_main .tr td:first-child {
-    padding: 0;
-}
-
-main .form .form_main .tr input[type="button"] {
-    cursor: pointer;
-    border: none;
-    background-color: #fff;
-    font-size: 17px;
-    color: #519aba;
-}
-
-main .form .form_main .tr input[type="button"]:hover {
-    color: blue;
-}
-
-main .form .form_bottom {
-    height: 50px;
-    width: 130px;
-    line-height: 50px;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    margin-left: -65px;
-}
-
-main .form .form_bottom input {
-    width: 45px;
-    height: 35px;
-    border: #fff 1px solid;
-    background-color: #b77880;
-    color: #fff;
-    font-size: 17px;
-    border-radius: 10px;
-}
-
-main .form .form_bottom span {
-    display: inline-block;
-    width: 40px;
-    text-align: center;
-}
-        
 </style>
