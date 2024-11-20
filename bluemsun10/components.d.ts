@@ -38,6 +38,8 @@ declare module 'vue' {
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
+    ElText: typeof import('element-plus/es')['ElText']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Login: typeof import('./src/components/Login/index.vue')['default']
     ManagerNav: typeof import('./src/components/ManagerNav/index.vue')['default']
     NavBar: typeof import('./src/components/NavBar/index.vue')['default']
