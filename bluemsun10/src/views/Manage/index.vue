@@ -109,8 +109,8 @@
     </el-form-item>
     <el-form-item label="限制类型：" prop="limitType" class="custom-form-item">
       <el-radio-group v-model="ruleForm.limitType">
-        <el-radio value="0">日用品</el-radio>
-        <el-radio value="1" style="padding-left: 20px;">学习用品</el-radio>
+        <el-radio value="0">一个月</el-radio>
+        <el-radio value="1" style="padding-left: 20px;">一学期</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item v-if="alter_title=='修改货物'" label="库存：" prop="amount" class="custom-form-item">
@@ -284,6 +284,7 @@ const rules = reactive<FormRules<RuleForm>>({
       message: '请输入商品价格',
       trigger: 'blur',
     },
+    { type: 'number', message: '必须是个数字', trigger: 'blur' },
   ],
   limitNum: [
     {
@@ -291,6 +292,18 @@ const rules = reactive<FormRules<RuleForm>>({
       message: '请输入限额',
       trigger: 'blur',
     },
+    { type: 'number', message: '必须是个整数', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        // 检查值是否为整数（包括正整数、负整数和零）
+        if (!Number.isInteger(Number(value))) {
+          callback(new Error('必须是个整数'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur' // 触发验证的事件类型，这里使用 'blur'
+    }
   ],
   limitType: [
     {
@@ -305,6 +318,18 @@ const rules = reactive<FormRules<RuleForm>>({
       message: '请输入库存',
       trigger: 'blur',
     },
+    { type: 'number', message: '必须是个整数', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        // 检查值是否为整数（包括正整数、负整数和零）
+        if (!Number.isInteger(Number(value))) {
+          callback(new Error('必须是个整数'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur' // 触发验证的事件类型，这里使用 'blur'
+    }
   ],
   status: [
     {
@@ -715,7 +740,7 @@ text-overflow: ellipsis;
     width: 280px;
     height: 30px;
     bottom: 25px;
-    right: 30px;
+    right: 70px;
     display: flex;
     justify-content: center;
     align-items: center;
