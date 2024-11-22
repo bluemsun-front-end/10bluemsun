@@ -6,8 +6,8 @@
     </div>
     <SearchBox @search="handleSearch" />
     <ProductSearch />
-    <div v-if="displayedProducts.length === 0" style="text-align: center; color: #333;margin-top: 20px;font-weight: 700;">
-      无搜索结果
+    <div v-if="displayedProducts.length === 0" style="text-align: center; ">
+      <el-empty :image-size="150" />
     </div>
     <ProductShow :products="displayedProducts" />
     <el-pagination

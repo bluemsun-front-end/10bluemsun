@@ -36,5 +36,16 @@
     display: flex;
     align-items: center;
   }
+  .el-button {
+  transition: all 0.3s ease;  
+  background-color: transparent; 
+  color: #409EFF; 
+  font-weight: bold;
+}
+.el-button:hover {
+  background-color: #66b3ff;
+  color: white; 
+
+}
   </style>
   

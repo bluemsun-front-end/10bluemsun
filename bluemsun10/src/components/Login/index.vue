@@ -90,7 +90,7 @@ const log=async()=>{
         if (response.data.code===200) {     
         ElMessage.success('登录成功');  
         localStorage.setItem('token', response.data.data.access_token);
-
+        localStorage.setItem('client_id',clientId.value)
         // 判断对象
         if(response.data.data.roles[0].roleName==="超市管理员") 
             router.push('/manage')

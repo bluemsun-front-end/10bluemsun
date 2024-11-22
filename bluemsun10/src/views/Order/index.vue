@@ -20,7 +20,7 @@
       </template>
     </el-dropdown>
     <span style="margin: 0 20px;">
-          <el-popconfirm title="确定删除？" @confirm="delectOrders">
+          <el-popconfirm title="确定删除？" @confirm="delectOrdersAll">
                 <template #reference>
                 <el-button type="primary" size="large"  style="padding: 10px;" :disabled="orderstatus!==0">批量核销</el-button>
                 </template>
@@ -33,14 +33,19 @@
       <div class="form_main">
         <el-table :data="orders" @selection-change="selected" border style="width: 1280px; margin:3px 0;">
             <el-table-column type="selection" width="50"/>
-            <el-table-column prop="createTime" label="订单时间" width="255"/>
-            <el-table-column prop="status" label="订单状态" width="220"/>
-            <el-table-column prop="username" label="用户名称" width="220"/>
-            <el-table-column prop="clothingBalance" label="订单总价" width="213"/>
-
-            <el-table-column label="操作" width="300" >
+            <el-table-column prop="createTime" label="订单时间" width="220"/>
+            <el-table-column prop="status" label="订单状态" width="190"/>
+            <el-table-column prop="names" label="商品名称" width="220" show-overflow-tooltip="true"/>
+            <el-table-column  label="订单总价" width="219">
+              <template #default="scope">
+                服装币:{{scope.row.clothingBalance}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日用币:{{scope.row.generalBalance}}
+              </template>
+            </el-table-column>
+            <el-table-column prop="username" label="用户名称" width="160"/>
+            <el-table-column label="操作" width="200" >
             <template #default="scope">
-            <el-popconfirm v-if="orderstatus==='0'" title="确定核销？" @confirm="delectOrders(scope.$index)">
+              <!-- {{console.log(scope.row.id)}} -->
+            <el-popconfirm v-if="scope.row.status==='待处理'" title="确定核销？" @confirm="delectOrders(scope.row.id)">
                 <template #reference>
                 <el-button text type="primary" class="table-btn ml10">
                         核销订单
@@ -104,6 +109,7 @@ interface Order {
   createTime: string;
   clothingBalance: string;
   generalBalance: string;
+  names:[]
 }
 const orders = ref<Order[]>([]);
 const currentPage = ref(1);
@@ -124,11 +130,11 @@ const orderstatus=ref(null)
 const classestitle=ref('订单分类')
 const intro=ref('')
 let orderID;
-let idArr=[]
+let idArr=ref([])
 const selected=(data)=>{
-    idArr=[]
+    idArr.value=[]
     data.forEach((value)=>{
-        idArr.push[value.id]
+        idArr.value.push(value.id)
     })
 }
 // 查看详情
@@ -206,7 +212,12 @@ onMounted(() => {
 
 
 // 核销商品
+const delectOrdersAll=()=>{
+  delectOrders(idArr.value)
+  // checkall.value=false
+}
 const delectOrders = async (idArr) => {
+  
   try {
     const authToken = localStorage.getItem('token');
     const clientId = localStorage.getItem('client_id');
@@ -219,6 +230,7 @@ const delectOrders = async (idArr) => {
     else{
       ElMessage.error('核销失败')
     }
+    fetchOrder(currentPage.value);
   }catch (error) {
     console.error('请求商品数据失败:', error);
   }
@@ -259,7 +271,7 @@ const handlePageChange2 = (newPage) => {
     width: 280px;
     height: 30px;
     bottom: 25px;
-   right: 25px;
+   right: 70px;
     display: flex;
     justify-content: center;
     align-items: center;

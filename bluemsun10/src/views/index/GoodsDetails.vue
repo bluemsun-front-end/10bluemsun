@@ -1,66 +1,73 @@
 <template>
-    <section id="productDetailModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
+  <section id="productDetailModal" class="modal">
+    <div class="modal-content">
+      <div class="title">
         <h2 id="productName">商品详情</h2>
+       <span class="close" @click="close">&times;</span>
+      </div>
+      <div class="all-content">
         <img id="productImage" :src="productDetail.imageUrlUrl" alt="商品图片">
-        <h2 id="productDescription">{{ productDetail.name }}</h2>
-        <br>
-        <span id="name">商品介绍:{{ productDetail.intro }}</span>
-        <br>
-        <span id="number">库存:{{ productDetail.amount }}</span>
-        <br>
-        <span id="con-price">价格:{{ productDetail.currencyType }} {{ productDetail.price }}</span>
-        <br>
-        <br>
-        <div class="count">
-          <span>数量：</span>
-          <div class="update">
-            <button class="btn1" @click="minus">-</button>
-            <div class="num">{{ num }}</div>
-            <button class="btn1" @click="add">+</button>
+        <div class="intro">
+          <h2 id="productDescription">{{ productDetail.name }}</h2>
+          <br>
+          <span id="name"><el-text class="mx-1" size="large">商品介绍:{{ productDetail.intro }}</el-text></span>
+          <br>
+          <span id="number"><el-text class="mx-1" type="danger" size="large">库存:{{ productDetail.amount }}</el-text></span>
+          <br>
+          <span id="con-price"><el-text class="mx-1">价格:{{ productDetail.currencyType }} {{ productDetail.price }}</el-text></span>
+          <br>
+          <div class="count">
+            <span><el-text class="mx-1">数量：</el-text></span>
+            <div class="update">
+            <el-input-number
+            size="small"
+            v-model="num"
+            :min="1"
+            :max="productDetail.amount > 0 ? productDetail.amount : 1"
+            :disabled="productDetail.amount === 0"
+            @change="handleChange" />
+            <el-button class="add" type="primary" round :disabled="productDetail.amount === 0" @click="addToCart">加入购物车</el-button>
+            </div>
           </div>
-        </div>
-        <br>
-        <div class="btn-box">
-          <div class="mb-4">
-            <!-- <el-button type="primary" round @click="buyNow">立即购买</el-button> -->
-            <el-button type="primary" round @click="addToCart">加入购物车</el-button>
+          <br>
+          <div class="btn-box">
+            <div class="mb-4">
+              
+            </div>
           </div>
         </div>
       </div>
-    </section>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import Axios from '../Axios/index';
-  import { useRouter } from 'vue-router';
-import {ElMessage} from 'element-plus';
+    </div>
+  </section>
+ 
+</template>
 
-  import { useRoute } from 'vue-router';
-  //
-  const productDetail = ref({});
-  const num = ref(1);
-  
-  const router = useRouter();
-    const closeModal = () => {
-      router.back(); // 返回上一页面
-    };
-  
-  const minus = () => {
-    if (num.value > 1) {
-      num.value--;
-    }
-  };
-  
-  const add = () => {
-    if(num.value < productDetail.value.amount)
-        num.value++;
-  };
+<script setup>
+import { ref, watch, defineEmits } from 'vue';
+import Axios from '../Axios/index';
+import { ElMessage } from 'element-plus';
 
-  const addToCart = () => {
-  // 检查库存是否大于0（修改）
+const num = ref(1)
+const handleChange = (value) => {
+  console.log(value)
+}
+
+const emit = defineEmits();
+
+const props = defineProps({
+  productDetail: {
+    type: Object,
+    required: true,
+  },
+});
+
+const productDetail = ref(props.productDetail);
+
+watch(() => props.productDetail, (newVal) => {
+  productDetail.value = newVal;
+}, { immediate: true });
+
+const addToCart = () => {
   if (productDetail.value.amount > 0) {
     const payload = {
       goodsId: productDetail.value.id,
@@ -68,12 +75,10 @@ import {ElMessage} from 'element-plus';
     };
     Axios.post('http://106.54.24.243:8080/market/cart', payload)
       .then(response => {
-        if(response.data.code===500)
-        {
+        if (response.data.code === 500) {
           ElMessage.success(response.data.msg);
           console.log('商品下架', response);
-        }
-        else{
+        } else {
           console.log('加入购物车成功', response);
           ElMessage.success('加入购物车成功');
         }
@@ -83,113 +88,23 @@ import {ElMessage} from 'element-plus';
         ElMessage.success('加入购物车失败');
       });
   } else {
-    // 如果库存为0，提示用户库存不足
     ElMessage.success('库存不足，无法加入购物车');
   }
 };
-  const route = useRoute();
-  const fetchProductDetail = async () => {
-    const productId = route.query.id;
-    try {
-      const response = await Axios.get(`http://106.54.24.243:8080/market/goods/${productId}`);
-      productDetail.value = response.data.data;
-      if(productDetail.value.currencyType==0)
-      {
-        productDetail.value.currencyType="日用币";
-      }
-      else{
-        productDetail.value.currencyType="服装币";
-      }
-    } catch (error) {
-      console.error('获取商品详情失败', error);
-    }
-  };
-  
-  fetchProductDetail();
-  </script>
+
+// 关闭弹框的方法
+const close = () => {
+  emit('close'); 
+};
+
+
+</script>
+
 <style scoped>
-*{
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-}
-.main-container2{
-    display:flex;
-    flex-direction: row;
-}
-.main{
-    width:19vw;
-    height:54vh;
-    box-shadow: inset 0 0 0 0 rgb(0, 0, 0.2);
-    border-radius: 10px;
-    margin-left:5vh;
-    margin-right:5vh;
-    margin-top:3vh;
-    
-}
-.content{
-    width:18vw;
-    height: 48vh;
-    margin-top: 2vh;
-    margin-left:0.5vw;
-    background-color: rgb(36, 39, 39);
-    display:flex;
-    flex-direction: column;
-   border-radius: 10px;
-}
-.image img{
-    width: 14vw;
-    height: 23vh;
-    margin:1vw;
-    margin-left:1vw;
-}
-#productName{
-    padding-bottom:10px;
-}
-.main:hover{
-    border:1px solid orangered;
-}
-.name span{   
-    float: left;
-    margin:0 auto;
-    margin-bottom: 2vh;
-    line-height: 18px;
-    font-size: 16px;
-    letter-spacing: 0.05em;
-    height: 5.6vh;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-}
-.name span:hover{
-    color:orangered;
-}
-.amount span{
-    font-size: 14px;
-    font-weight:bold;
-}
-.price span{
-    height: 20px;
-}
-#categoryContainer button {
-    margin: 5px;
-    padding: 5px 10px;
-}
-
-#productListContainer {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.productItem {
-    border: 1px solid #ddd;
-    margin: 5px;
-    padding: 10px;
-    text-align: center;
-    margin-left:2vw;
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
 .modal {
@@ -198,7 +113,6 @@ import {ElMessage} from 'element-plus';
     left: 0;
     top: 0;
     width: 100%;
-    /* height:100vh; */
     overflow: auto;
     background-color: rgba(22, 22, 22, 0.469);
 }
@@ -208,9 +122,68 @@ import {ElMessage} from 'element-plus';
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 80%;
+    max-width: 700px;
+}
+.all-content{
+  display:flex;
+  flex-direction: row;
+}
+.intro{
+  display:flex;
+  flex-direction: column;
+  margin-left:30px;
+  margin-bottom:0px;
+}
+.count{
+  display:flex;
+  flex-direction: row;
 }
 
+#productImage {
+  width: 200px; /* 或者其他固定宽度 */
+  height: 200px;
+  border-radius: 4px;
+  margin-bottom: 0; /* 移除底部边距 */
+  margin-top:10px;
+}
+
+#productDescription, #name, #number, #con-price {
+  font-size: 16px;
+  color: #333;
+  /* margin-bottom: 10px; */
+}
+
+.count, .btn-box {
+  margin-top: 0; /* 移除顶部边距 */
+}
+
+.update {
+  margin-right: 10px;
+}
+
+.el-input-number {
+  width: auto; /* 自适应宽度 */
+}
+
+.el-button {
+  background-color: #409eff;
+  border-color: #409eff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  width: auto; /* 自适应宽度 */
+}
+
+.el-button:hover {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+}
+.add{
+  margin-left:60px;
+}
 .close {
     color: #aaa;
     float: right;
@@ -220,91 +193,28 @@ import {ElMessage} from 'element-plus';
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: rgb(51.2, 126.4, 204);
     text-decoration: none;
     cursor: pointer;
 }
-.modal-content{
-    height:400px;
+#productName{
+  width:100px;
 }
-#productImage{
-    width: 300px;
-    height: 300px;
-    float:left;
-    
+.title{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
-#productDescription{
-    float:left;
-    font-size: 25px;
-    font-weight:bold;
-    padding-left:20px;
-    padding-bottom:20px;
-    width: 49vw;
-}
-#number{
-    float:left;
-    font-size:18px;
-    color:orangered;
-    padding-left:20px;
-    padding-bottom:20px;
-    width: 49vw;
-}
-#con-price{
-    float:left;
-    font-size:18px;
-    padding-left:20px;
-    padding-bottom:20px;
-    width: 49vw;
-}
-#name{
-    float:left;
-    font-size:18px;
-    padding-left:20px;
-    padding-bottom:20px;
-    width: 49vw;
-}
-#position{
-    float:left;
-    font-size:18px;
-    padding-left:20px;
-    padding-bottom:20px;
-    width: 49vw;
-}
-.btn-box{
-    float:left;
-    height:7vh;
-    border:none;
-    font-size:20px;
-    color:white;
-    margin-right:5vw;
-    margin-left:2vw;
-    width:40%;
-    line-height:7vh;
-    display:flex;
-    flex-direction: row;
-}
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .modal-content {
+    flex-direction: column; 
+    width: 95%;
+    margin: 50px auto;
+  }
 
-.count{
-    display:flex;
-    flex-direction: row;
-    font-size:18px;
-    padding-left:20px;
-    padding-bottom:20px;
-    width: 49vw;
+  #productImage {
+    width: 100%;
+  }
 }
-.update{
-    display:flex;
-    flex-direction: row;
-
-}
-.num{
-    width:3vw;
-    padding-left: 1vw;
-    padding-right: 1vw;
-}
-.btn1{
-    width: 2vw;
-    height: 3vh;
-}
-
 </style>
