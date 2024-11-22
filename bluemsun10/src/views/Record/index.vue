@@ -173,7 +173,7 @@ const handlePageChange = (newPage) => {
     width: 280px;
     height: 30px;
     bottom: 25px;
-    right: 25px;
+    right: 70px;
     display: flex;
     justify-content: center;
     align-items: center;
