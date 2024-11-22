@@ -27,13 +27,13 @@ const onSearch = () => {
   justify-content: center;
   align-items: center;
   height: 10vh; 
+  margin-left: 50px;
   padding-bottom: 13px;
-  padding-top: 27px;
 }
 
 .search-input {
   outline:none;
-  width: 50vw;
+  width: 30vw;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
