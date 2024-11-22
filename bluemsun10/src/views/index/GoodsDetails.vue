@@ -17,8 +17,8 @@
           <span id="con-price"><el-text class="mx-1">价格:{{ productDetail.currencyType }} {{ productDetail.price }}</el-text></span>
           <br>
           <div class="count">
-            <span><el-text class="mx-1">数量：</el-text></span>
             <div class="update">
+              <span><el-text class="mx-1">数量：</el-text></span>
             <el-input-number
             size="small"
             v-model="num"
@@ -208,13 +208,28 @@ body {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .modal-content {
-    flex-direction: column; 
-    width: 95%;
+    width: 60%;
     margin: 50px auto;
   }
+  .modal{
+    height:100vh;
+  }
+  .all-content{
+    flex-direction: column;
+    align-items: center;
+  }
 
-  #productImage {
-    width: 100%;
+  .intro{
+    margin-left:0px;
+  }
+
+  .count{
+    justify-content: center;
+  }
+
+  .add{
+    margin-left:0px;
+    margin-top:10px;
   }
 }
 </style>

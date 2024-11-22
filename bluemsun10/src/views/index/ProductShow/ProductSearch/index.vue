@@ -32,4 +32,17 @@
 .nav-bar > :last-child {
     margin-right: 0;
 }
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .nav-bar {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center;
+    height: 10vh;
+    color: #171616;
+    border-radius: 10px;
+    padding: 0 10px;
+    margin-left: 0px;
+}
+}
 </style>

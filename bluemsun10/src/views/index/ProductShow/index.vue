@@ -123,11 +123,6 @@ img:hover {
    background-color: rgb(235.9, 245.3, 255); 
   border-bottom-left-radius: 8px; 
   border-bottom-right-radius: 8px; 
-  /* width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 4px; */
 }
 
 .price,
@@ -146,5 +141,34 @@ img:hover {
 
 .image-darken {
   filter: grayscale(100%) opacity(0.5); 
+}
+@media (max-width: 768px) { /* 针对手机端的样式调整 */
+  .item {
+    width: calc(50% - 10px); /* 手机端占满整个屏幕宽度 */
+    margin: 5px;
+  }
+
+  .title {
+    font-size: 15px; 
+  }
+
+  img {
+    height: 80px; /* 手机端图片高度固定 */
+  }
+  .details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+   background-color: rgb(235.9, 245.3, 255); 
+  border-bottom-left-radius: 8px; 
+  border-bottom-right-radius: 8px; 
+  font-size: 5px;
+  }
+  .price{
+    margin:0px;
+    font-size:5px;
+  }
 }
 </style>

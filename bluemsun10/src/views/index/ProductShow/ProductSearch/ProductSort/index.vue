@@ -17,13 +17,11 @@
   
   <script lang="ts" setup>
   import { ArrowDown } from '@element-plus/icons-vue'
-// 这里加了
   import { inject, Ref } from 'vue'; // 导入 Ref 类型
   const isasc = inject<Ref<string>>('isasc');
   const handleSort = (command) => {
   isasc.value = command;
 };
-// 到这里
   </script>
   <style scoped>
   .example-showcase .el-dropdown + .el-dropdown {
@@ -35,4 +33,5 @@
     display: flex;
     align-items: center;
   }
+
   </style>

@@ -46,4 +46,15 @@ h2 {
 .goods-disaplay button:hover {
     background-color: #337ecc; /* 按钮悬停时的背景颜色 */
 }
+@media (max-width: 768px) { /* 当屏幕宽度大于 768px 时 */
+  .goods-disaplay {
+    padding: 1vw; 
+    width: 150px;
+    height:200px;
+  }
+
+  h2 {
+    font-size: 20px; /* 增加字体大小以适应大屏幕 */
+  }
+}
 </style>
