@@ -102,6 +102,7 @@
   import { useCartStore } from '@/stores/cartStore';
   import { storeToRefs } from 'pinia';
   import { onMounted } from 'vue';
+  import isLogin from '@/api/isLogin'
 
   const cartStore = useCartStore();
   const { 
@@ -131,6 +132,8 @@
     console.log('开始挂载')
     getItem();
     getCurrency();
+    isLogin();
+  
   });
 </script> 
 

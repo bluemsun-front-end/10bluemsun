@@ -128,7 +128,8 @@ export const useCartStore = defineStore('cartStore', () => {
                 checkoutInfo.value = false; // 结算后关闭弹窗
                 ElMessage.success('结算成功');
                 getCurrency();
-                getItem();
+                getItem(); 
+                isAllSelected.value = false; // 取消全选状态
             } else if (response.data.code == '500') {  
                 const warning = response.data.msg;
                 ElMessage.warning(warning);
