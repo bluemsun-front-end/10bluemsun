@@ -21,7 +21,7 @@
         <el-col :span="12">
           <div class="demo-basic--circle">
             <div class="block">
-              <el-avatar :size="65" :src="circleUrl" />
+              <el-avatar :size="65" :src="avatarUrl" />
             </div>
           </div>
         </el-col>
@@ -41,7 +41,7 @@ const token = `${authToken}`;
 const activeIndex = ref(0);
 
 // 使用自定义 Hook 获取数据
-const { generalBalance, clothingBalance, campusName } = useNavBarData(token);
+const { generalBalance, clothingBalance, campusName ,avatarUrl} = useNavBarData(token);
 
 // 初始化第一个菜单项为激活状态
 onMounted(() => {
@@ -63,14 +63,6 @@ const navigateToIndex = (index: number) => {
   router.push(`/${path}`);
 };
 
-// 定义状态和图片 URL
-const state = reactive({
-  circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl: 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'] as const,
-});
-
-const { circleUrl } = toRefs(state);
 </script>
 <style scoped>
 .header-content {
