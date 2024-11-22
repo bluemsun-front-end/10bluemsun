@@ -7,10 +7,7 @@ import Login from '@/components/Login/index.vue';
 import Manage from '@/views/Manage/index.vue';
 import Order from '@/views/Order/index.vue';
 import Record from '@/views/Record/index.vue'
-import index from '@/views-file/Login/index.vue'; 
-import   { isLoggedIn }   from  '@/utils/auth' 
-import { ElMessage }  from  'element-plus'  
-
+import index from '@/views-file/Login/index.vue';
 //创建路由器
 const router = createRouter({
     history: createWebHistory(),
@@ -18,56 +15,53 @@ const router = createRouter({
         {
             name: 'details',
             path: '/details',
-            component: GoodsDetails,
-            meta: { requiresAuth: true },
-        }, 
-
+            component: GoodsDetails
+        },
         {
             path: '/cart',
-            component: ShopCart,
-            meta: { requiresAuth: true },
+            component: ShopCart
         },
 
 
         {
             name: 'OrderList',
             path: '/orderList',
-            component: () => import('@/views/OrderList/OrderListIndex.vue'),
-            meta: { requiresAuth: true },
-        }, 
-
+            component: () => import('@/views/OrderList/OrderListIndex.vue')
+        },
         {//首页
             path: '/home',
             name: 'home',
-            component: Home,
-            meta: { requiresAuth: true },
+            component: Home
         },
-
         {//登录
             path: '/',
             name: 'login',
             component: Login
         },
-
+        {
+            name: 'shopcart',
+            path: '/shopcart',
+            component: () => import('@/views/ShopCart/index.vue')
+        },
+        {//首页
+            path: '/home',
+            name: 'home',
+            component: Home
+        },
         {
             path: '/manage',
             name: 'manage',
             component: Manage,
-            meta: { requiresAuth: true ,role:'超市管理员'},
-        }, 
-
+        },
         {
             path: '/order',
             name: 'order',
-            component: Order,
-            meta: { requiresAuth: true,role:'超市管理员' },
-        }, 
-
+            component: Order
+        },
         {
             path: '/record',
             name: 'record',
-            component: Record,
-            meta: { requiresAuth: true ,role:'超市管理员'},
+            component: Record
         }
 
     ]
@@ -75,29 +69,14 @@ const router = createRouter({
 
 
 
-router.beforeEach((to, from, next) => {  
+router.beforeEach((to, from, next) => {
+    // 每次路由切换时执行的函数
+    console.log("每次路由切换时执行的函数");
 
-    const role = localStorage.getItem('role');
+    // 继续导航
+    next();
+});
 
-    if (to.meta.requiresAuth && !isLoggedIn()) {
-      // 如果目标路由需要登录且用户未登录 
-      ElMessage.error('请先登录'); // 显示提示消息
-      next({ name: 'Login' }); // 跳转到登录页面 
-           
-
-    }  
-    
-    else if (to.meta.role && to.meta.role !== role) {
-        // 用户角色不符合要求，禁止访问 
-        ElMessage.error('无访问权限')
-        next({ name: 'home' }); // 或者跳转到 403 页面
-      }
-
-    else {
-      next(); // 否则正常跳转
-    }
-  });
-  
 
 
 

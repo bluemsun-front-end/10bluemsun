@@ -5,6 +5,7 @@ export function useNavBarData(token: string) {
   const generalBalance = ref(0);
   const clothingBalance = ref(0);
   const campusName = ref('');
+  const avatarUrl = ref('');
 
   const fetchData = async () => {
     try {
@@ -14,6 +15,7 @@ export function useNavBarData(token: string) {
       });
       if (campusResponse.data.code === 200 && campusResponse.data.data) {
         campusName.value = campusResponse.data.data.user.deptName;
+        avatarUrl.value = campusResponse.data.data.user.avatar;
       } else {
         console.error('Failed to fetch user profile:', campusResponse.data.msg);
       }
@@ -41,6 +43,6 @@ export function useNavBarData(token: string) {
     generalBalance,
     clothingBalance,
     campusName,
-    // circleUrl,
+    avatarUrl
   };
 }

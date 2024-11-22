@@ -4,10 +4,12 @@
     <div class="show">
       <ProductCarrousel />
     </div>
-    <SearchBox @search="handleSearch" />
-    <ProductSearch />
-    <div v-if="displayedProducts.length === 0" style="text-align: center; color: #333;margin-top: 20px;font-weight: 700;">
-      无搜索结果
+    <div class="center-container">
+      <ProductSearch />
+      <SearchBox @search="handleSearch" />
+    </div>
+    <div v-if="displayedProducts.length === 0" style="text-align: center; ">
+      <el-empty :image-size="150" />
     </div>
     <ProductShow :products="displayedProducts" />
     <el-pagination
@@ -127,6 +129,10 @@ watch(isasc, (newVal) => {
   justify-content: center;
   margin-top: 20px;
   margin-bottom:30px;
+}
+.center-container {
+  display: flex;
+  margin-top: 20px;
 }
 
 </style>

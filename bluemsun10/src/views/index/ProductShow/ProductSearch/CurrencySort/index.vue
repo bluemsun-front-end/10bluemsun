@@ -27,6 +27,25 @@
 // 到这里
   </script>
   <style scoped>
+    .example-showcase .el-dropdown + .el-dropdown {
+    margin-left: 15px;
+  }
+  .example-showcase .el-dropdown-link {
+    cursor: pointer;
+    color: var(--el-color-primary);
+    display: flex;
+    align-items: center;
+  }
+  .el-button{
+  transition: all 0.3s ease;
+  background-color: #409EFF; 
+  color: white; 
+  font-weight: bold;
+}
+
+.el-button:hover {
+  background-color: #3380cc;
+}
   .example-showcase .el-dropdown + .el-dropdown {
     margin-left: 15px;
   }
