@@ -109,8 +109,8 @@
     </el-form-item>
     <el-form-item label="限制类型：" prop="limitType" class="custom-form-item">
       <el-radio-group v-model="ruleForm.limitType">
-        <el-radio value="0">日用品</el-radio>
-        <el-radio value="1" style="padding-left: 20px;">学习用品</el-radio>
+        <el-radio value="0">一个月</el-radio>
+        <el-radio value="1" style="padding-left: 20px;">一学期</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item v-if="alter_title=='修改货物'" label="库存：" prop="amount" class="custom-form-item">
@@ -284,6 +284,26 @@ const rules = reactive<FormRules<RuleForm>>({
       message: '请输入商品价格',
       trigger: 'blur',
     },
+    // { type: 'number', message: 'Age must be a number', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        // 首先检查值是否存在且为数字
+        if (!value || isNaN(value)) {
+          callback(new Error('必须是个大于0的数字'));
+          return;
+        }
+        // 将值转换为数字（以防它是字符串形式的数字）
+        const price = Number(value);
+        // 检查值是否为大于0的整数
+        // !Number.isInteger(age) || 
+        if (price <= 0) {
+          callback(new Error('必须是个大于0的数字'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur' // 触发验证的事件类型
+    }
   ],
   limitNum: [
     {
@@ -291,6 +311,25 @@ const rules = reactive<FormRules<RuleForm>>({
       message: '请输入限额',
       trigger: 'blur',
     },
+  // { type: 'number', message: 'Age must be a number', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        // 首先检查值是否存在且为数字
+        if (!value || isNaN(value)) {
+          callback(new Error('必须是个大于0的数字'));
+          return;
+        }
+        // 将值转换为数字（以防它是字符串形式的数字）
+        const limitNum = Number(value);
+        // 检查值是否为大于0的整数
+        if (!Number.isInteger(limitNum) ||limitNum <= 0) {
+          callback(new Error('必须是个大于0的整数'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur' // 触发验证的事件类型
+    }
   ],
   limitType: [
     {
@@ -305,6 +344,24 @@ const rules = reactive<FormRules<RuleForm>>({
       message: '请输入库存',
       trigger: 'blur',
     },
+    {
+      validator: (rule, value, callback) => {
+        // 首先检查值是否存在且为数字
+        if (!value || isNaN(value)) {
+          callback(new Error('必须是个大于0的数字'));
+          return;
+        }
+        // 将值转换为数字（以防它是字符串形式的数字）
+        const age = Number(value);
+        // 检查值是否为大于0的整数
+        if (!Number.isInteger(age) ||age <= 0) {
+          callback(new Error('必须是个大于0的整数'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur' // 触发验证的事件类型
+    }
   ],
   status: [
     {
@@ -715,7 +772,7 @@ text-overflow: ellipsis;
     width: 280px;
     height: 30px;
     bottom: 25px;
-    right: 30px;
+    right: 70px;
     display: flex;
     justify-content: center;
     align-items: center;
