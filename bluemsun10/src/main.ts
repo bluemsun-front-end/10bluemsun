@@ -6,7 +6,7 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { createPinia } from 'pinia' 
 import router from './router/index';
 import App from './App.vue';
-
+import '../icon/iconfont/iconfont.css';
 const app = createApp(App); 
 const pinia=createPinia();
 app.use(ElementPlus, {locale: zhCn});

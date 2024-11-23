@@ -1,34 +1,37 @@
 <template>
   <el-header height="85px">
     <div class="header-content">
-      <div class="top_hello">
-        <span style="margin-left: 40px;">爱心超市</span>
-        <span class="campus">{{ campusName }}</span>
+  <div class="top_hello">
+      <span style="margin-left: 40px;font-family:隶书 ;font-weight: 700;font-size: 40px; color:#409eff ;"> 爱心超市 </span>
+      <span class="campus" style="font-family: 黑体;">{{ campusName }}</span>
+  </div>
+  <div class="header_menu">
+      <span class="cloud"></span>
+      <ul class="menuList" style="font-family: 黑体;">
+          <li :class="{ active: activeIndex === 0 }" @click="navigateToIndex(0)" class=""><span class="iconfont icon-shouye"></span> 首页</li>
+          <li :class="{ active: activeIndex === 1 }" @click="navigateToIndex(1)"><span class="iconfont icon-icon-test1"></span> 购物车</li>
+          <li :class="{ active: activeIndex === 2 }" @click="navigateToIndex(2)"><span class="iconfont icon-icon-test"></span> 订单</li>
+      </ul>
+  </div>
+  <div class="money" style="font-family: 黑体;">
+      <span>日用币：{{ generalBalance }}</span>
+      <span>服饰币：{{ clothingBalance }}</span>
+  </div>
+  <el-button type="primary" size="large" style="font-family: 黑体;font-weight: 700;">退出登录</el-button>
+  <el-row class="demo-avatar demo-basic">
+    <el-col :span="12">
+      <div class="demo-basic--circle">
+        <div class="block">
+          <el-avatar :size="65" :src="avatarUrl" />
+        </div>
       </div>
-      <div class="header_menu">
-        <span class="cloud"></span>
-        <ul class="menuList">
-          <li :class="{ active: activeIndex === 0 }" @click="navigateToIndex(0)">首页</li>
-          <li :class="{ active: activeIndex === 1 }" @click="navigateToIndex(1)">购物车</li>
-          <li :class="{ active: activeIndex === 2 }" @click="navigateToIndex(2)">订单</li>
-        </ul>
-      </div>
-      <div class="money">
-        <span>日用币：{{ generalBalance }}</span>
-        <span>服饰币：{{ clothingBalance }}</span>
-      </div>
-      <el-row class="demo-avatar demo-basic">
-        <el-col :span="12">
-          <div class="demo-basic--circle">
-            <div class="block">
-              <el-avatar :size="65" :src="avatarUrl" />
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
+    </el-col>
+  </el-row>
+</div>
   </el-header>
 </template>
+
+
 
 <script lang="ts" setup>
 import { ref, reactive, toRefs, onMounted } from 'vue';
