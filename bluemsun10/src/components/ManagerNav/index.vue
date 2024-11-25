@@ -1,149 +1,128 @@
 <template>
-  <el-header>
+  <el-header height="85px">
     <div class="header-content">
-      <div class="top_hello">
-        <span style="margin-left: 40px;" class="name">爱心超市</span>
+  <div class="top_hello">
+      <span style="margin-left: 40px;font-family:隶书 ;font-weight: 700;font-size: 40px; color:#409eff ;"> 爱心超市 </span>
+  </div>
+  <div class="header_menu">
+      <span class="cloud"></span>
+      <ul class="menuList" style="font-family: 黑体;">
+          <li :class="{ active: activeIndex === 0 }" @click="navigateToIndex(0)" class=""><span style=" vertical-align: middle; margin-right:5px" ><el-icon :size="22"><Box /></el-icon></span>货物管理</li>
+          <li :class="{ active: activeIndex === 1 }" @click="navigateToIndex(1)"><span style=" vertical-align: middle; margin-right:5px" ><el-icon :size="22"><ShoppingCartFull /></el-icon></span>进货记录</li>
+          <li :class="{ active: activeIndex === 2 }" @click="navigateToIndex(2)"><span style=" vertical-align: middle; margin-right:5px" ><el-icon :size="22"><Document  /></el-icon></span>订单管理</li>
+      </ul>
+  </div>
+  <el-button type="primary" size="large" style="font-family: 黑体;font-weight: 700;">退出登录</el-button>
+  <el-row class="demo-avatar demo-basic">
+    <el-col :span="12">
+      <div class="demo-basic--circle">
+        <div class="block">
+          <el-avatar :size="65" :src="avatarUrl" />
+        </div>
       </div>
-      <div class="header_menu">
-        <span class="cloud"></span>
-        <ul class="menuList">
-          <li
-            v-for="(item, index) in menuItems"
-            :key="index"
-            :class="{active: isActive === index}"
-            @click="handleClick(index)"
-          >
-            {{ item.label }}
-          </li>
-        </ul>
-      </div>
-      <el-row class="demo-avatar demo-basic">
-        <el-col :span="12">
-          <div class="demo-basic--circle">
-            <div class="block">
-              <el-avatar :size="65" :src="circleUrl" />
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
+    </el-col>
+  </el-row>
+</div>
   </el-header>
 </template>
 
+
+
 <script lang="ts" setup>
-import { ref, reactive, toRefs, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router';
-
+import { ref, reactive, toRefs, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useNavBarData } from '@/stores/useNavBarData';
+ import { Box,ShoppingCartFull,Document  } from '@element-plus/icons-vue'
 const router = useRouter();
-const route = useRoute();  // 用来获取当前路由信息
+const authToken = localStorage.getItem('token');
+const token = `${authToken}`;
+const activeIndex = ref(0);
 
-const menuItems = [
-  { label: '管理货物' },
-  { label: '进货记录' },
-  { label: '订单管理' },
-];
+// 使用自定义 Hook 获取数据
+const { generalBalance, clothingBalance, campusName ,avatarUrl} = useNavBarData(token);
 
-const state = reactive({
-  circleUrl:
-    'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-  squareUrl:
-    'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-  sizeList: ['small', '', 'large'] as const,
+// 初始化第一个菜单项为激活状态
+onMounted(() => {
+  const pathToIndexMap: Record<string, number> = {
+    '/manage': 0,
+    '/record': 1,
+    '/order': 2,
+  };
+  
+  // 修复路径判断：使用 router.currentRoute.value.path
+  const currentPath = router.currentRoute.value.path;
+  activeIndex.value = pathToIndexMap[currentPath] ?? 0;
 });
 
-const { circleUrl, squareUrl, sizeList } = toRefs(state);
-
-// 当前选中的菜单项索引
-const isActive = ref(0);
-
-// 根据当前路由更新 active 样式
-watch(
-  () => route.path,
-  (newPath) => {
-    if (newPath === '/manage') isActive.value = 0;
-    if (newPath === '/record') isActive.value = 1;
-    if (newPath === '/order') isActive.value = 2;
-  },
-  { immediate: true }  // 初始加载时也要更新一次
-);
-
-const handleClick = (index: number) => {
-  isActive.value = index;
-  if (index === 0) {
-    router.push('/manage');
-  }
-  if (index === 1) {
-    router.push('/record');
-  }
-  if (index === 2) {
-    router.push('/order');
-  }
+const navigateToIndex = (index: number) => {
+  activeIndex.value = index; // 更新激活项
+  // 根据索引跳转到相应的路由
+  const path = ['manage', 'record', 'order'][index];
+  router.push(`/${path}`);
 };
-</script>
 
+</script>
 <style scoped>
-li {
-  cursor: pointer;
-}
 .header-content {
-  display: flex;
   width: 1300px;
-  margin: auto;
-  justify-content: space-between;
+  display: flex;
+  justify-content: space-between; 
   align-items: center;
-  height: 85px;
+  height: 85px; 
+  margin: auto;
   border-bottom: 1px solid rgb(243.9, 244.2, 244.8);
   box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
-.name {
-  color: rgb(51.2, 126.4, 204);
-  font-weight: 700;
-  font-size: 40px;
-}
-.top_hello,
-.money {
+
+.top_hello, .money {
   font-size: 18px;
 }
 
 .top_hello span {
   font-size: 30px;
-  margin-right: 42px;
+  margin-right: 1.5vw;
   letter-spacing: 0.1em;
 }
 
 .top_hello .campus {
-  margin-right: 30px;
+  margin-right: 1vw;
   font-size: 20px;
 }
 
 .money span {
-  margin: 0 25px;
+  margin: 0 1vw;
 }
 
-.block {
-  margin: 0 40px;
-  margin-top: 10px;
-}
-.menuList li {
-  box-sizing: border-box;
-  line-height: 85px;
-  height: 85px;
+.menuList {
+  display: flex;
   list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menuList li {
+  cursor: pointer;
+  height: 85px;
+  line-height: 85px;
   font-size: 20px;
-  letter-spacing: 0.1em;
   display: inline-block;
-  padding: 0 60px;
+  padding: 0 3vw;
   text-decoration: none;
+  transition: background-color 0.3s, color 0.3s, border-bottom-color 0.3s;
+  margin: 0 1vw;
 }
 
-.menuList li:hover {
-  border-bottom: 4px solid #409EFF;
-  color: #409EFF;
+.menuList li.active {
+  color: black;
+  border-bottom: 4px solid #409EFF; /* 激活项的样式 */
 }
 
-.active {
-  border-bottom: 4px solid #409EFF;
-  color: #409EFF;
+.menuList li:hover:not(.active) {
+  border-bottom: 4px solid #409EFF; /* 鼠标悬停时的样式 */
+}
+
+.demo-avatar {
+  margin-right: 20px;
 }
 </style>

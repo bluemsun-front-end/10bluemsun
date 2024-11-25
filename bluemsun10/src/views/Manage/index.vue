@@ -846,7 +846,7 @@ main .form .form_top {
 main .form .form_top h2 {
     line-height: 100px;
     margin-left: 20px;
-    color: rgb(51.2, 126.4, 204);
+    color:#409eff;
 }
 
 main .form .form_top span {

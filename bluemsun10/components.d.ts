@@ -40,11 +40,15 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    Index2: typeof import('./src/components/Login/index2.vue')['default']
     Login: typeof import('./src/components/Login/index.vue')['default']
     ManagerNav: typeof import('./src/components/ManagerNav/index.vue')['default']
     NavBar: typeof import('./src/components/NavBar/index.vue')['default']
     PageNation: typeof import('./src/components/PageNation/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }
