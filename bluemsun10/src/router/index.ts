@@ -8,6 +8,8 @@ import Manage from '@/views/Manage/index.vue';
 import Order from '@/views/Order/index.vue';
 import Record from '@/views/Record/index.vue'
 import index from '@/views-file/Login/index.vue';
+import isLogin from '@/api/isLogin';
+import { ElMessage } from 'element-plus';
 //创建路由器
 const router = createRouter({
     history: createWebHistory(),
@@ -33,35 +35,28 @@ const router = createRouter({
             name: 'home',
             component: Home
         },
-        {//登录
-            path: '/',
-            name: 'login',
-            component: Login
-        },
         {
             name: 'shopcart',
             path: '/shopcart',
             component: () => import('@/views/ShopCart/index.vue')
         },
-        {//首页
-            path: '/home',
-            name: 'home',
-            component: Home
-        },
         {
             path: '/manage',
             name: 'manage',
             component: Manage,
+            meta: { role: ['超市管理员', '超级管理员'] }
         },
         {
             path: '/order',
             name: 'order',
-            component: Order
+            component: Order,
+            meta: { role: ['超市管理员', '超级管理员'] }
         },
         {
             path: '/record',
             name: 'record',
-            component: Record
+            component: Record,
+            meta: { role: ['超市管理员', '超级管理员'] }
         }
 
     ]
@@ -69,13 +64,49 @@ const router = createRouter({
 
 
 
-router.beforeEach((to, from, next) => {
-    // 每次路由切换时执行的函数
-    console.log("每次路由切换时执行的函数");
-
-    // 继续导航
-    next();
-});
+router.beforeEach(async (to, from, next) => {
+    try {
+      // 获取 URL 参数
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const role = urlParams.get('role');
+  
+      // 存储 token 和 role
+      if (token) localStorage.setItem('token', token);
+      if (role) localStorage.setItem('role', role);
+  
+      // 检查登录状态
+      const isLoggedIn = await isLogin();
+      if (!isLoggedIn && to.path !== '/') {
+        const redirectUrl = `${window.location.origin}${to.fullPath}`;
+        return (window.location.href = `http://localhost:5173/?redirect=${redirectUrl}`);
+      }
+  
+      // 验证权限
+      const storedRole = localStorage.getItem('role') || '';
+      const requiredRoles = to.meta?.role as string[] | undefined; // 类型断言
+      if (requiredRoles && !requiredRoles.includes(storedRole)) {
+        ElMessage.error('无访问权限');
+        return router.push('/home');
+      }
+  
+      next();
+    } catch (error) {
+      console.error('导航守卫出错:', error);
+      next('/'); // 默认跳转到登录页
+    }
+  });
+  
+  router.afterEach((to, from) => {
+    const query = { ...to.query };
+    if ('token' in query) delete query.token;
+    if ('role' in query) delete query.role;
+  
+    if (JSON.stringify(query) !== JSON.stringify(to.query)) {
+      const newPath = to.path.replace(/\/+/g, '/');
+      router.replace({ path: newPath, query });
+    }
+  });
 
 
 

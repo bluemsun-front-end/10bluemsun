@@ -30,8 +30,10 @@
 
               <div class="item-info">
                 <el-tooltip :content=item.goodsName  placement="top">
-                  <h3 class="item-name">{{ item.goodsName }}</h3>
-                </el-tooltip>
+                  <h3 class="item-name">{{ item.goodsName }}</h3> 
+              
+                </el-tooltip> 
+               
                 <p class="item-price">{{ formatPrice(item) }}</p>
                 <el-input-number
                   v-model="item.num"
@@ -43,7 +45,10 @@
                 <p class="currency-type">货币类型: {{ item.currencyType === '0' ? '日用币' : '服装币' }}</p>
                 <el-button type="danger" @click="removeSelectedItems(item.goodsId)" class="remove">移除</el-button>
               </div>
-            </div>
+            </div> 
+
+            
+
           </div>
           
           <!-- 购物车为空的展示 -->
@@ -132,7 +137,8 @@
     console.log('开始挂载')
     getItem();
     getCurrency();
-    isLogin();
+    isLogin();  
+
   
   });
 </script> 
@@ -140,6 +146,7 @@
 
 <style lang="css" scoped>
 /* 总价的样式 */ 
+
 
 
 
@@ -152,7 +159,7 @@
   margin: 15px;
   justify-content: center; 
   background-color: #bdbdbd; /* 中性灰 */
-  color: #212121; /* 接近黑色的文字，清晰对比 */
+  color: #F5F5F5; /* 接近黑色的文字，清晰对比 */
 }
 
 .cart-card:hover {
@@ -209,7 +216,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 20px; /* 商品之间的间距**/
 }
 
 
@@ -243,14 +250,16 @@
   display: flex;
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+  border-radius: 10px; /* 圆角 */
 }
 
 .item-image {
   width: 100%;
-  height: auto;
-  border-radius: 10px;
-  transition: transform 0.3s ease; /* 设置平滑过渡效果 */
-} 
+  height: 100%;
+  object-fit: cover; /* 保证图片比例填充容器 */
+  border-radius: 10px; /* 与容器保持一致 */
+  transition: transform 0.3s ease; /* 平滑过渡 */
+}
 
 
 .zoom-card {
@@ -258,21 +267,18 @@
   top: 0;
   right: -300px; /* 放大卡片位于图片的右侧 */
   width: 300px; /* 放大卡片的宽度 */
-  background-color: rgba(255, 255, 255, 0.9); /* 半透明背景 */
+ 
   border-radius: 13px;
   display: none; /* 默认隐藏 */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+ 
   justify-content: center;
   align-items: center;
- 
+
 } 
 
 .zoom-image {
   width: 100%;
-  
   object-fit: cover;
-  transition: transform 0.3s ease;
-  object-fit: cover; 
   border-radius: 20px;
 }
 
@@ -284,9 +290,11 @@
 
 
 .item-image-container:hover .zoom-image {
-  transform: scale(1.2); /* 放大卡片中的图片放大 */
+  width: 260px; /* 固定宽度 */
+ height: 210px;
+  object-fit: cover; /* 确保图片比例适配 */
+  transition: width 0.3s ease, height 0.3s ease; /* 平滑过渡效果 */
 }
-
 
 .item-info {
   display: flex;
@@ -311,9 +319,9 @@
 
 .item-price {
   font-size: 1.2rem;
-  color: #FF5722; /* 保持橙色 */
   font-weight: 500;
-  line-height: 1.4; /* 增加行高 */
+  color: #FF5722; /* 商品价格橙色 */
+  margin-top: 0; /* 紧贴商品名称 */
 }
 
 .quantity-input {
