@@ -12,7 +12,7 @@
           <li :class="{ active: activeIndex === 2 }" @click="navigateToIndex(2)"><span style=" vertical-align: middle; margin-right:5px" ><el-icon :size="22"><Document  /></el-icon></span>订单管理</li>
       </ul>
   </div>
-  <el-button type="primary" size="large" style="font-family: 黑体;font-weight: 700;">退出登录</el-button>
+  <el-button type="primary" size="large" style="font-family: 黑体;font-weight: 700;" @click="centerDialogVisible = true">退出登录</el-button>
   <el-row class="demo-avatar demo-basic">
     <el-col :span="12">
       <div class="demo-basic--circle">
@@ -22,6 +22,16 @@
       </div>
     </el-col>
   </el-row>
+  <el-dialog v-model="centerDialogVisible" title="确认退出吗？" width="370" center align-center>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="centerDialogVisible = false" style="float: left; margin-left:85px">取消</el-button>
+        <el-button type="primary" @click="handleLogout()" style="float: left; ">
+          确认
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </div>
   </el-header>
 </template>
@@ -33,11 +43,13 @@ import { ref, reactive, toRefs, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNavBarData } from '@/stores/useNavBarData';
  import { Box,ShoppingCartFull,Document  } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus';
+import Axios from '@/views/Axios';
 const router = useRouter();
 const authToken = localStorage.getItem('token');
 const token = `${authToken}`;
 const activeIndex = ref(0);
-
+const centerDialogVisible = ref(false)
 // 使用自定义 Hook 获取数据
 const { generalBalance, clothingBalance, campusName ,avatarUrl} = useNavBarData(token);
 
@@ -60,6 +72,34 @@ const navigateToIndex = (index: number) => {
   const path = ['manage', 'record', 'order'][index];
   router.push(`/${path}`);
 };
+const role = localStorage.getItem('role')
+const handleLogout = async () => {
+  console.log('退出登录')
+  try {
+    const response = await Axios.post('http://106.54.24.243:8080/auth/logout', {
+     
+    })
+    if (response.data.code === 200) {
+      ElMessage.success('退出成功！')
+
+      localStorage.removeItem('token')
+      localStorage.removeItem('role')
+      localStorage.removeItem('client_id')
+      // 等待2秒跳转到登录
+      setTimeout(() => {
+        window.location.href = `http://localhost:5173`
+
+      }, 60)
+    } else {
+      ElMessage.error(response.data.msg + '!')
+    }
+  } catch (error) {
+    ElMessage.error('请求失败！')
+  }
+}
+
+
+
 
 </script>
 <style scoped>

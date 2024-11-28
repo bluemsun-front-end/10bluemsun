@@ -71,6 +71,7 @@
       :width="140"
       label="商品图片"
       align="center"
+      align-center
     >
       <el-image
         style="width: 100px; height: 100px"
@@ -95,7 +96,7 @@
 <script setup lang="ts">
 import Nav from '@/components/ManagerNav/index.vue'
 import { reactive, ref,watch } from 'vue';
-import axios from 'axios';
+import Axios from '../Axios/index';
 import { onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { fa } from 'element-plus/es/locale';
@@ -145,11 +146,8 @@ const detail = (index: number) => {
 };
 const datailOrder = async (id, current) => {
   try {
-    const authToken = localStorage.getItem('token');
-    const clientId = localStorage.getItem('client_id');
-    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-    axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get(`http://106.54.24.243:8080/market/orderInfo/page`, {
+
+    const response = await Axios.get(`http://106.54.24.243:8080/market/orderInfo/page`, {
       params: {
         orderId: id,
         pageSize: 1,
@@ -179,11 +177,8 @@ watch(orderstatus, (newValue, oldValue) => {
 });
 const fetchOrder = async (current) => {
   try {
-    const authToken = localStorage.getItem('token');
-    const clientId = localStorage.getItem('client_id');
-    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-    axios.defaults.headers.common['clientId'] = clientId;
-    const response = await axios.get('http://106.54.24.243:8080/market/order/adminlist', {
+
+    const response = await Axios.get('http://106.54.24.243:8080/market/order/adminlist', {
       params: {
         pageSize: 11,
         pageNum: current,
@@ -219,11 +214,8 @@ const delectOrdersAll=()=>{
 const delectOrders = async (idArr) => {
   
   try {
-    const authToken = localStorage.getItem('token');
-    const clientId = localStorage.getItem('client_id');
-    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`; 
-    axios.defaults.headers.common['clientId'] = clientId;
-    const res=await axios.post(`http://106.54.24.243:8080/market/order/check/${idArr}`);
+
+    const res=await Axios.post(`http://106.54.24.243:8080/market/order/check/${idArr}`);
     if(res.data.code===200){
       ElMessage.success('核销成功')
     }

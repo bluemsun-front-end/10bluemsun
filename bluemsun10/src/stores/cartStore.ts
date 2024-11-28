@@ -66,8 +66,7 @@ export const useCartStore = defineStore('cartStore', () => {
         var removeItem = { ids: [itemId] };
         try {
             const response = await Axios.delete(`http://106.54.24.243:8080/market/cart/${removeItem.ids.join(',')}`);
-            console.log('DELresponse', response); 
-            console.log('removeItem', removeItem);
+        
     
             if (response.data.code == '200') {
                 cartItems.value = cartItems.value.filter((item: { goodsId: any; }) => item.goodsId !== itemId);
@@ -129,7 +128,7 @@ export const useCartStore = defineStore('cartStore', () => {
                 ElMessage.success('结算成功');
                 getCurrency();
                 getItem();
-                getItem(); 
+    
                 isAllSelected.value = false; // 取消全选状态
             } else if (response.data.code == '500') {  
                 const warning = response.data.msg;

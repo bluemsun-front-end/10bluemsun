@@ -9,7 +9,10 @@ import Order from '@/views/Order/index.vue';
 import Record from '@/views/Record/index.vue'
 import index from '@/views-file/Login/index.vue';
 import isLogin from '@/api/isLogin';
-import { ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus'; 
+function sleep(ms: number | undefined) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 //创建路由器
 const router = createRouter({
     history: createWebHistory(),
@@ -74,12 +77,13 @@ router.beforeEach(async (to, from, next) => {
       // 存储 token 和 role
       if (token) localStorage.setItem('token', token);
       if (role) localStorage.setItem('role', role);
+    
   
       // 检查登录状态
       const isLoggedIn = await isLogin();
       if (!isLoggedIn && to.path !== '/') {
         const redirectUrl = `${window.location.origin}${to.fullPath}`;
-        return (window.location.href = `http://localhost:5173/?redirect=${redirectUrl}`);
+        return (window.location.href = `http://localhost:5173/?redirect=${redirectUrl}&role=${role}`);
       }
   
       // 验证权限
@@ -92,7 +96,7 @@ router.beforeEach(async (to, from, next) => {
   
       next();
     } catch (error) {
-      console.error('导航守卫出错:', error);
+    
       next('/'); // 默认跳转到登录页
     }
   });
