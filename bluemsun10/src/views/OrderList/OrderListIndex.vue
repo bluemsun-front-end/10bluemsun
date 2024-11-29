@@ -62,7 +62,7 @@
     />
 
     <!-- 订单详情弹窗 -->
-    <el-dialog v-model="visible" :title="`订单详情 - ${rowData.orderCode}`" width="950" top="10vh" :close-on-click-modal="false">
+    <el-dialog v-model="visible" :title="`订单详情`" width="950" top="10vh" :close-on-click-modal="false">
       <div>
         <el-table :data="detailTableData" height="500" v-loading="loadings.detail">
           <el-table-column property="goodsImg" width="150" align="center">
@@ -193,9 +193,52 @@ const showDetail = async (row: any) => {
   visible.value = true;
 };
 
+
+// 定义一个响应式变量来存储客户端ID
+const clientId = ref<string>('');
+
+// 定义一个变量来判断是电脑端还是移动端
+let isPc: boolean = true;
+
+// 定义一个函数来判断是否是电脑端
+const isPC = (): void => {
+  const userAgent = navigator.userAgent
+
+  // 定义一些常见的移动设备和浏览器的用户代理特征
+  const mobileAgents: RegExp[] = [
+    /android/i,     // Android设备
+    /iphone|ipad|ipod/i, // iOS设备
+    /windows phone/i, // Windows Phone设备
+    /blackberry/i,  // Blackberry设备
+    /opera mini/i,  // Opera Mini浏览器（通常用于移动设备）
+    /mobile/i,      // 通用移动设备标记
+    /touch/i        // 触摸设备标记（可能包括桌面触摸屏）
+  ];
+
+  // 初始化isPc为true
+  isPc = true;
+
+  // 检查用户代理字符串是否包含任何移动设备的特征
+  for (let i = 0; i < mobileAgents.length; i++) {
+    if (mobileAgents[i].test(userAgent)) {
+      isPc = false; // 如果是移动设备，则将isPc设置为false
+    }
+  }
+};
+
+// 在组件挂载时调用isPC函数
 onMounted(() => {
+  isPC();
+  if (isPc === false) {
+    clientId.value = "428a8310cd442757ae699df5d894f051"
+  } else {
+    clientId.value = "e5cd7e4891bf95d1d19206ce24a7b32e"
+  }
+  localStorage.setItem('clientid', clientId.value)
+  console.log(11111);
   getList();
 });
+
 </script>
 
 <style scoped>

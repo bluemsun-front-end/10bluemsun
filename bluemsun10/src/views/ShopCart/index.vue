@@ -40,7 +40,7 @@
                   v-model="item.num"
                   :min="1"
                   :max="item.limitNum"
-                  @change="updateSelectedTotalPrice"
+                 @change="(value) => handleQuantityChange(item, value)"
                   class="quantity-input"
                 />
                 <p class="currency-type">货币类型: {{ item.currencyType === '0' ? '日用币' : '服装币' }}</p>
@@ -139,9 +139,14 @@
     getItem();
     getCurrency();
     isLogin();  
+  });  
 
-  
-  });
+
+  const handleQuantityChange = (item, value) => {
+  cartStore.updateSelectedTotalPrice(); // 更新总价
+  cartStore.updateItemQuantity(item.goodsId, value); // 调用 Pinia 方法更新数量
+};
+
 </script> 
 
 

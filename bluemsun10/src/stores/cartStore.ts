@@ -154,7 +154,45 @@ export const useCartStore = defineStore('cartStore', () => {
     // 监听 selectedItems 变化，更新全选按钮的状态
     watch(selectedItems, (newSelectedItems) => {
         isAllSelected.value = newSelectedItems.length === filteredItems.value.length;
-    });
+    });  
+
+
+    //修改购物车数量 
+
+    // 更新商品数量的方法
+const updateItemQuantity = async (itemId: number, newQuantity: number) => {
+    try {
+        // 找到对应的商品
+        const item = cartItems.value.find((item: { goodsId: number }) => item.goodsId === itemId);
+        if (!item) {
+            ElMessage.warning('商品不存在');
+            return;
+        }
+
+        // 请求体结构
+        const payload = {
+            goodsId: item.goodsId,
+            num: newQuantity,
+            imgUrl: item.imageUrlUrl,
+            goodsName: item.goodsName,
+        };
+
+        // 调用后端接口更新数量
+        const response = await Axios.put('http://106.54.24.243:8080/market/cart', payload);
+
+        if (response.data.code === '200') {
+            // 更新本地数据
+            item.num = newQuantity;
+            ElMessage.success('商品数量已更新');
+        } else {
+            ElMessage.warning(response.data.msg || '更新商品数量失败，请稍后重试！');
+        }
+    } catch (error) {
+        console.error('更新商品数量时出错:', error);
+        ElMessage.error('更新商品数量时出现错误！');
+    }
+};
+
 
     return {
         router,
@@ -174,6 +212,8 @@ export const useCartStore = defineStore('cartStore', () => {
         toggleSelectAll, 
         updateSelectedTotalPrice,
         formatPrice,
-        toHome
+        toHome,
+        updateItemQuantity,
+       
     }
 });

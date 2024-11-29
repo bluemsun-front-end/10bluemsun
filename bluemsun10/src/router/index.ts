@@ -10,6 +10,7 @@ import Record from '@/views/Record/index.vue'
 import index from '@/views-file/Login/index.vue';
 import isLogin from '@/api/isLogin';
 import { ElMessage } from 'element-plus'; 
+import NotFound from '@/components/NotFound/index.vue'
 function sleep(ms: number | undefined) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -20,47 +21,56 @@ const router = createRouter({
         {
             name: 'details',
             path: '/details',
-            component: GoodsDetails
+            component: GoodsDetails,
+            meta: { role: ['资助对象'] }
         },
         {
             path: '/cart',
-            component: ShopCart
+            component: ShopCart,
+            meta: { role: ['资助对象'] }
         },
 
 
         {
             name: 'OrderList',
             path: '/orderList',
-            component: () => import('@/views/OrderList/OrderListIndex.vue')
+            component: () => import('@/views/OrderList/OrderListIndex.vue'),
+            meta: { role: ['资助对象'] }
         },
         {//首页
             path: '/home',
             name: 'home',
-            component: Home
+            component: Home,
+            meta: { role: ['资助对象'] }
         },
         {
             name: 'shopcart',
             path: '/shopcart',
-            component: () => import('@/views/ShopCart/index.vue')
+            component: () => import('@/views/ShopCart/index.vue'),
+            meta: { role: ['资助对象'] }
         },
         {
             path: '/manage',
             name: 'manage',
             component: Manage,
-            meta: { role: ['超市管理员', '超级管理员'] }
+            meta: { role: ['超市管理员'] }
         },
         {
             path: '/order',
             name: 'order',
             component: Order,
-            meta: { role: ['超市管理员', '超级管理员'] }
+            meta: { role: ['超市管理员'] }
         },
         {
             path: '/record',
             name: 'record',
             component: Record,
-            meta: { role: ['超市管理员', '超级管理员'] }
-        }
+            meta: { role: ['超市管理员'] }
+        },
+        {
+          path: '/:pathMatch(.*)*', // 捕捉所有不存在的路径
+          component: NotFound, // 显示 404 页面
+        },
 
     ]
 })
@@ -91,7 +101,7 @@ router.beforeEach(async (to, from, next) => {
       const requiredRoles = to.meta?.role as string[] | undefined; // 类型断言
       if (requiredRoles && !requiredRoles.includes(storedRole)) {
         ElMessage.error('无访问权限');
-        return router.push('/home');
+       window.location.href = `http://localhost:5173/framework`
       }
   
       next();

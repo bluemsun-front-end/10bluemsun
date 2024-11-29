@@ -75,20 +75,28 @@ const addToCart = () => {
     };
     Axios.post('http://106.54.24.243:8080/market/cart', payload)
       .then(response => {
-        if (response.data.code === 500) {
-          ElMessage.success(response.data.msg);
+        if (response.data.code ===500) {
+          ElMessage.error(response.data.msg);
           console.log('商品下架', response);
-        } else {
+        } 
+        else if(response.data.code ===200){
           console.log('加入购物车成功', response);
           ElMessage.success('加入购物车成功');
+        }
+        else if(response.data.code ===401){
+          ElMessage.error('认证失败');
+        }
+        else if(response.data.code ===403){
+          ElMessage.error('您没有此权限');
         }
       })
       .catch(error => {
         console.error('加入购物车失败', error);
-        ElMessage.success('加入购物车失败');
+        ElMessage.error('加入购物车失败');
       });
-  } else {
-    ElMessage.success('库存不足，无法加入购物车');
+  } 
+  else {
+    ElMessage.error('库存不足，无法加入购物车');
   }
 };
 
@@ -113,6 +121,7 @@ body {
     left: 0;
     top: 0;
     width: 100%;
+    height: 100%;
     overflow: auto;
     background-color: rgba(22, 22, 22, 0.469);
 }
