@@ -93,7 +93,7 @@ router.beforeEach(async (to, from, next) => {
       const isLoggedIn = await isLogin();
       if (!isLoggedIn && to.path !== '/') {
         const redirectUrl = `${window.location.origin}${to.fullPath}`;
-        return (window.location.href = `http://localhost:5173/?redirect=${redirectUrl}&role=${role}`);
+        return (window.location.href = `http://106.54.24.243:5173/?redirect=${redirectUrl}&role=${role}`);
       }
   
       // 验证权限
@@ -101,7 +101,7 @@ router.beforeEach(async (to, from, next) => {
       const requiredRoles = to.meta?.role as string[] | undefined; // 类型断言
       if (requiredRoles && !requiredRoles.includes(storedRole)) {
         ElMessage.error('无访问权限');
-       window.location.href = `http://localhost:5173/framework`
+       window.location.href = `http://106.54.24.243:5173/framework`
       }
   
       next();

@@ -87,7 +87,7 @@ const handleLogout = async () => {
       localStorage.removeItem('client_id')
       // 等待2秒跳转到登录
       setTimeout(() => {
-        window.location.href = `http://localhost:5173`
+        window.location.href = `http://106.54.24.243:5173`
 
       }, 60)
     } else {
@@ -110,9 +110,11 @@ const handleLogout = async () => {
   align-items: center;
   height: 85px; 
   margin: auto;
+  margin-top: 10px;
   border-bottom: 1px solid rgb(243.9, 244.2, 244.8);
   box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 .top_hello, .money {

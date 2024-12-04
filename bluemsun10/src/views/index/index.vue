@@ -90,9 +90,50 @@ const handlePageChange = (newPage) => {
 };
 
 onMounted(() => {
+  isPC()
   loadProducts(currentPage.value);
   console.log('Initial totalNum:', totalNum.value); 
 });
+
+// 定义一个响应式变量来存储客户端ID
+const clientId = ref('');
+// 定义一个变量来判断是电脑端还是移动端
+let isPc = true;
+// 定义一个函数来判断是否是电脑端
+const isPC = () => {
+  const userAgent = navigator.userAgent;
+
+  // 定义一些常见的移动设备和浏览器的用户代理特征
+  const mobileAgents = [
+    /android/i,     // Android设备
+    /iphone|ipad|ipod/i, // iOS设备
+    /windows phone/i, // Windows Phone设备
+    /blackberry/i,  // Blackberry设备
+    /opera mini/i,  // Opera Mini浏览器（通常用于移动设备）
+    /mobile/i,      // 通用移动设备标记
+    /touch/i        // 触摸设备标记（可能包括桌面触摸屏）
+  ];
+
+  // 初始化isPc为true
+  isPc = true;
+
+  // 检查用户代理字符串是否包含任何移动设备的特征
+  for (let i = 0; i < mobileAgents.length; i++) {
+    if (mobileAgents[i].test(userAgent)) {
+      isPc = false; // 如果是移动设备，则将isPc设置为false
+    }
+  }
+  console.log(isPc);
+      //改变clientId查看是移动端还是PC端
+    if (isPc == false) {
+      clientId.value = '428a8310cd442757ae699df5d894f051'
+    } else {
+      clientId.value = 'e5cd7e4891bf95d1d19206ce24a7b32e'
+    }
+ localStorage.setItem('client_id',clientId.value)
+ console.log(1111);
+};
+
 
 // 监听变化并重新加载商品
 watch(category, (newVal) => {
@@ -112,6 +153,7 @@ watch(isasc, (newVal) => {
 });
 </script>
 
+
 <style>
 #app {
   display: block;
@@ -121,18 +163,35 @@ watch(isasc, (newVal) => {
 .show {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top:30px;
 }
 
 #pagenation{
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 30px;
   margin-bottom:30px;
 }
 .center-container {
   display: flex;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
+html, body {
+  height: 100%; /* 确保 body 和 html 元素填满整个视口 */
+  margin: 0 ;
+
+}
+html{
+  background-image: url('../../../public/image/背景图2.gif');
+  background-size: cover; /* 使背景图像覆盖整个元素，而不改变其宽高比 */
+  background-position: center; /* 将背景图像放置在元素的中心 */
+  background-attachment: fixed;
+}
+
+.box{
+  background-color: rgba(255, 255, 255, 0.8);
+  margin: 6vh 5vh;
+  border-radius: 20px;
+}
 </style>

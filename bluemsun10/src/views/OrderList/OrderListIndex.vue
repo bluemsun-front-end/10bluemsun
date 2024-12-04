@@ -224,24 +224,30 @@ const isPC = (): void => {
       isPc = false; // 如果是移动设备，则将isPc设置为false
     }
   }
-};
-
-// 在组件挂载时调用isPC函数
-onMounted(() => {
-  isPC();
   if (isPc === false) {
     clientId.value = "428a8310cd442757ae699df5d894f051"
   } else {
     clientId.value = "e5cd7e4891bf95d1d19206ce24a7b32e"
   }
   localStorage.setItem('clientid', clientId.value)
-  console.log(11111);
-  getList();
+   getList();
+};
+
+// 在组件挂载时调用isPC函数
+onMounted(() => {
+  isPC();
 });
 
 </script>
 
 <style scoped>
+
+.table-container {
+  width: 100%;
+  height: 500px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
 .order-list {
   margin-top:2vh;
   padding: 30px 40px;
@@ -270,4 +276,19 @@ onMounted(() => {
   margin: 10px 0;
   text-align: right;
 }
+
+
+
 </style>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -160,12 +160,15 @@
 .cart-card {
   border-radius: 10px;
   padding: 25px; 
-  width: 100%;
+  
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  margin: 15px;
+  margin: 15px ;
   justify-content: center; 
-  background-color: #bdbdbd; /* 中性灰 */
+  background-color: rgba(255, 255, 255, 0.8); /* 中性灰 */
   color: #F5F5F5; /* 接近黑色的文字，清晰对比 */
+  margin-top: 40px;
+  margin-left: 5vh;;
+  margin-right: 5vh;
 }
 
 .cart-card:hover {
@@ -177,7 +180,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  margin-right: 15vw;
+  margin-right: 20px;
 }
 
 .cart-total {

@@ -1,4 +1,3 @@
-<!-- 爱心超市 -->
 <!-- src/App.vue -->
 <template>
   <div id="app">
@@ -7,13 +6,14 @@
 </template>
 
 <script>
+
+
 export default {
-  name: 'App'
-};
+  name: 'App',
+
+}
 </script>
 
 <style>
 
 </style>
-
-

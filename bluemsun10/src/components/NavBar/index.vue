@@ -72,7 +72,7 @@ const handleLogout = async () => {
       localStorage.removeItem('client_id')
       // 等待2秒跳转到登录
       setTimeout(() => {
-        window.location.href = `http://localhost:5173`
+        window.location.href = `http://106.54.24.243:5173`
 
       }, 60)
     } else {
@@ -114,13 +114,15 @@ const navigateToIndex = (index: number) => {
   display: flex;
   justify-content: space-between; 
   align-items: center;
-  height: 85px; 
+  height: 100px; 
   margin-left: auto;
   margin-right: auto;
   border-bottom: 1px solid rgb(243.9, 244.2, 244.8);
   box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.8);
+  margin-top: 1vh;
 }
 
 .top_hello, .money {
@@ -134,7 +136,7 @@ const navigateToIndex = (index: number) => {
 }
 
 .campus {
-  margin-right: 1vw;
+  margin-right: 20px;
   font-size: 2vh;
 }
 
@@ -175,7 +177,7 @@ const navigateToIndex = (index: number) => {
 }
 
 .demo-avatar {
-  margin-right: 2vh;
+  margin-right: 1vh;
 }
 
 .top_hello, .money, .menuList li, el-button {
